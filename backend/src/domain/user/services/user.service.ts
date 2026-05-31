@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { IUserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
+import { Email } from 'src/domain/shared/value-objects/email';
 
 @Injectable()
 export class UserDomainService {
@@ -38,8 +39,8 @@ export class UserDomainService {
     return user;
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity | null> {
-    const user = await this.userRepository.findByEmail(email);
+  async getUserByEmail(email: Email): Promise<UserEntity | null> {
+    const user = await this.userRepository.findByEmail(email.value);
 
     if (user && !user.isActive) {
       throw new Error('User account is deactivated');

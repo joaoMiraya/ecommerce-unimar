@@ -13,6 +13,7 @@ import {
 import { UserEntity } from './domain/user/entities/user.entity';
 import { ProductEntity } from './domain/product/entities/product.entity';
 import { OrderEntity } from './domain/order/entities/order.entity';
+import { LoginSessionEntity } from './domain/auth/entities/login-session.entity';
 import { UserDomainService } from './domain/user/services/user.service';
 import { ProductDomainService } from './domain/product/services/product.service';
 import { OrderDomainService } from './domain/order/services/order.service';
@@ -25,10 +26,14 @@ import { ProductRepositoryImpl } from './infrastruct/database/repositories/produ
 import { OrderRepositoryImpl } from './infrastruct/database/repositories/order.repository.impl';
 import { AppDataSource } from './infrastruct/database/config/data-source';
 
+// Modules
+import { AuthModule } from './application/auth.module';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot(AppDataSource.options),
-    TypeOrmModule.forFeature([UserEntity, ProductEntity, OrderEntity]),
+    TypeOrmModule.forFeature([UserEntity, ProductEntity, OrderEntity, LoginSessionEntity]),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
@@ -83,6 +88,6 @@ import { AppDataSource } from './infrastruct/database/config/data-source';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('cats');
+    consumer.apply(LoggerMiddleware).forRoutes('health');
   }
 }
