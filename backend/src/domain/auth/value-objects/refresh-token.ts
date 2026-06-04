@@ -10,7 +10,11 @@ export class RefreshToken {
   private readonly _expiresAt: Date;
   private readonly _createdAt: Date;
 
-  private constructor(value: string, expiresAt: Date, createdAt: Date = new Date()) {
+  private constructor(
+    value: string,
+    expiresAt: Date,
+    createdAt: Date = new Date(),
+  ) {
     this._value = value;
     this._expiresAt = expiresAt;
     this._createdAt = createdAt;
@@ -33,7 +37,9 @@ export class RefreshToken {
     // Gerar token seguro (32 bytes = 64 caracteres hex)
     const token = this.generateSecureToken();
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(
+      now.getTime() + expiresInDays * 24 * 60 * 60 * 1000,
+    );
 
     return new RefreshToken(token, expiresAt, now);
   }

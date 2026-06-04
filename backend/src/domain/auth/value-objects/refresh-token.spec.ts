@@ -35,8 +35,12 @@ describe('RefreshToken Value Object', () => {
       const token = RefreshToken.create(7);
       const afterCreation = new Date();
 
-      expect(token.expiresAt.getTime()).toBeGreaterThan(afterCreation.getTime());
-      expect(token.expiresAt.getTime() - beforeCreation.getTime()).toBeGreaterThan(
+      expect(token.expiresAt.getTime()).toBeGreaterThan(
+        afterCreation.getTime(),
+      );
+      expect(
+        token.expiresAt.getTime() - beforeCreation.getTime(),
+      ).toBeGreaterThan(
         7 * 24 * 60 * 60 * 1000 - 1000, // Account for execution time
       );
     });
@@ -55,13 +59,15 @@ describe('RefreshToken Value Object', () => {
 
     it('should throw error for empty token value', () => {
       const expiresAt = new Date();
-      expect(() => RefreshToken.createFromExisting('', expiresAt)).toThrow('cannot be empty');
+      expect(() => RefreshToken.createFromExisting('', expiresAt)).toThrow(
+        'cannot be empty',
+      );
     });
 
     it('should throw error for invalid expiration date', () => {
-      expect(() => RefreshToken.createFromExisting('token', null as any)).toThrow(
-        'must be a valid Date',
-      );
+      expect(() =>
+        RefreshToken.createFromExisting('token', null as any),
+      ).toThrow('must be a valid Date');
     });
   });
 
@@ -140,8 +146,16 @@ describe('RefreshToken Value Object', () => {
     it('should return true for same token values', () => {
       const now = new Date();
       const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      const token1 = RefreshToken.createFromExisting('same-token', expiresAt, now);
-      const token2 = RefreshToken.createFromExisting('same-token', expiresAt, now);
+      const token1 = RefreshToken.createFromExisting(
+        'same-token',
+        expiresAt,
+        now,
+      );
+      const token2 = RefreshToken.createFromExisting(
+        'same-token',
+        expiresAt,
+        now,
+      );
       expect(token1.equals(token2)).toBe(true);
     });
 

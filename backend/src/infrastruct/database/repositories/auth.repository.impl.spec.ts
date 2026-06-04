@@ -12,7 +12,9 @@ describe('AuthRepositoryImpl', () => {
   const mockUserId = '550e8400-e29b-41d4-a716-446655440000';
   const mockSessionId = '660e8400-e29b-41d4-a716-446655440001';
 
-  const createMockSession = (overrides?: Partial<LoginSessionEntity>): LoginSessionEntity => {
+  const createMockSession = (
+    overrides?: Partial<LoginSessionEntity>,
+  ): LoginSessionEntity => {
     const refreshToken = RefreshToken.create(7);
     const now = new Date();
     const session = LoginSessionEntity.create({
@@ -183,7 +185,8 @@ describe('AuthRepositoryImpl', () => {
     it('should return 0 when no sessions found', async () => {
       (typeormRepository.find as jest.Mock).mockResolvedValue([]);
 
-      const result = await authRepository.revokeAllUserSessions('non-existent-user');
+      const result =
+        await authRepository.revokeAllUserSessions('non-existent-user');
 
       expect(result).toBe(0);
     });
@@ -199,7 +202,9 @@ describe('AuthRepositoryImpl', () => {
         execute: jest.fn().mockResolvedValue({ affected: 3 }),
       };
 
-      (typeormRepository.createQueryBuilder as jest.Mock).mockReturnValue(mockQueryBuilder);
+      (typeormRepository.createQueryBuilder as jest.Mock).mockReturnValue(
+        mockQueryBuilder,
+      );
 
       const result = await authRepository.deleteExpiredSessions();
 
@@ -244,7 +249,8 @@ describe('AuthRepositoryImpl', () => {
       ];
       (typeormRepository.find as jest.Mock).mockResolvedValue(sessions);
 
-      const result = await authRepository.findAllActiveSessionsByUserId(mockUserId);
+      const result =
+        await authRepository.findAllActiveSessionsByUserId(mockUserId);
 
       expect(result).toEqual(sessions);
       expect(typeormRepository.find).toHaveBeenCalledWith({

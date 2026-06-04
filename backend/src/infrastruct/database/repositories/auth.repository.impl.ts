@@ -39,7 +39,9 @@ export class AuthRepositoryImpl implements IAuthRepository {
     });
   }
 
-  async findByRefreshToken(refreshToken: string): Promise<LoginSessionEntity | null> {
+  async findByRefreshToken(
+    refreshToken: string,
+  ): Promise<LoginSessionEntity | null> {
     return this.repository.findOne({
       where: { refreshTokenValue: refreshToken },
     });
@@ -49,7 +51,9 @@ export class AuthRepositoryImpl implements IAuthRepository {
     return this.repository.save(session);
   }
 
-  async updateSession(session: LoginSessionEntity): Promise<LoginSessionEntity> {
+  async updateSession(
+    session: LoginSessionEntity,
+  ): Promise<LoginSessionEntity> {
     return this.repository.save(session);
   }
 
@@ -109,7 +113,9 @@ export class AuthRepositoryImpl implements IAuthRepository {
     });
   }
 
-  async findAllActiveSessionsByUserId(userId: string): Promise<LoginSessionEntity[]> {
+  async findAllActiveSessionsByUserId(
+    userId: string,
+  ): Promise<LoginSessionEntity[]> {
     return this.repository.find({
       where: { userId, isActive: true },
       order: { createdAt: 'DESC' },

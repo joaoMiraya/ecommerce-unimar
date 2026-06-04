@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, FindOptionsWhere } from 'typeorm';
 import type { IOrderRepository } from '../../../domain/order/repositories/order.repository';
-import { OrderEntity, OrderStatus } from '../../../domain/order/entities/order.entity';
+import {
+  OrderEntity,
+  OrderStatus,
+} from '../../../domain/order/entities/order.entity';
 
 /**
  * Implementação de IOrderRepository
@@ -52,10 +55,10 @@ export class OrderRepositoryImpl implements IOrderRepository {
    */
   async find(criteria: Partial<OrderEntity>): Promise<OrderEntity[]> {
     const where: FindOptionsWhere<OrderEntity> = {};
-    
+
     if (criteria.id) where.id = criteria.id;
     if (criteria.status) where.status = criteria.status;
-    
+
     return this.dataSource.getRepository(OrderEntity).find({
       where,
       relations: ['buyer', 'products'],

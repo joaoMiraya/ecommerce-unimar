@@ -66,9 +66,13 @@ export class Password {
     }
 
     // Validar se tem pelo menos um caractere especial
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+      password,
+    );
     if (!hasSpecialChar) {
-      throw new Error('Password must contain at least one special character (!@#$%^&*...)');
+      throw new Error(
+        'Password must contain at least one special character (!@#$%^&*...)',
+      );
     }
   }
 

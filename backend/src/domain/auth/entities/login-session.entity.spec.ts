@@ -192,7 +192,9 @@ describe('LoginSessionEntity', () => {
       });
 
       session.revoke();
-      expect(() => session.updateLastUsed()).toThrow('Cannot update last used on inactive session');
+      expect(() => session.updateLastUsed()).toThrow(
+        'Cannot update last used on inactive session',
+      );
     });
   });
 
@@ -233,7 +235,10 @@ describe('LoginSessionEntity', () => {
 
       session.revoke();
       expect(() =>
-        session.renewAccessToken('new-token', new Date(now.getTime() + 30 * 60 * 1000)),
+        session.renewAccessToken(
+          'new-token',
+          new Date(now.getTime() + 30 * 60 * 1000),
+        ),
       ).toThrow('Cannot renew token on inactive session');
     });
   });

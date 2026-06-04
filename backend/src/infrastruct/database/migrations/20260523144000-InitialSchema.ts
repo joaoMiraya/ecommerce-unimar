@@ -76,9 +76,7 @@ export class InitialSchema20260523144000 implements MigrationInterface {
     await queryRunner.query(
       `DROP INDEX IF EXISTS "IDX_order_products_product"`,
     );
-    await queryRunner.query(
-      `DROP INDEX IF EXISTS "IDX_order_products_order"`,
-    );
+    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_order_products_order"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "order_products"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "orders"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "products"`);

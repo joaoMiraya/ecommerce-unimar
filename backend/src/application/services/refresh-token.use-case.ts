@@ -30,10 +30,14 @@ export class RefreshTokenUseCase {
     private readonly jwtService: JwtService,
   ) {}
 
-  async execute(input: RefreshTokenUseCaseInput): Promise<RefreshTokenUseCaseOutput> {
+  async execute(
+    input: RefreshTokenUseCaseInput,
+  ): Promise<RefreshTokenUseCaseOutput> {
     return this.unitOfWork.execute(async () => {
       // 1. Buscar sessão pelo refresh token
-      const session = await this.authRepository.findByRefreshToken(input.refreshToken);
+      const session = await this.authRepository.findByRefreshToken(
+        input.refreshToken,
+      );
       if (!session) {
         throw new Error('Invalid refresh token');
       }
@@ -63,7 +67,9 @@ export class RefreshTokenUseCase {
       const newAccessToken = this.jwtService.sign(jwtPayload);
 
       // 5. Atualizar sessão
-      const newExpiresAt = new Date(now.getTime() + accessTokenExpiresIn * 1000);
+      const newExpiresAt = new Date(
+        now.getTime() + accessTokenExpiresIn * 1000,
+      );
       session.renewAccessToken(newAccessToken, newExpiresAt);
 
       // 6. Persistir sessão atualizada

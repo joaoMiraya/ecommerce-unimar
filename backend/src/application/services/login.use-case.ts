@@ -9,7 +9,11 @@ import { Password } from '../../domain/shared/value-objects/password';
 import { Email } from '../../domain/shared/value-objects/email';
 import { RefreshToken } from '../../domain/auth/value-objects/refresh-token';
 import { type JwtPayload } from '../../domain/auth/types/auth.types';
-import { UNIT_OF_WORK_TOKEN, USER_REPOSITORY_TOKEN, AUTH_REPOSITORY_TOKEN } from '../di/tokens';
+import {
+  UNIT_OF_WORK_TOKEN,
+  USER_REPOSITORY_TOKEN,
+  AUTH_REPOSITORY_TOKEN,
+} from '../di/tokens';
 
 export interface LoginUseCaseInput {
   email: string;

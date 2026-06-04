@@ -24,13 +24,14 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginSessionEntity } from '../domain/auth/entities/login-session.entity';
 
 // Tokens
-import { UNIT_OF_WORK_TOKEN, USER_REPOSITORY_TOKEN, AUTH_REPOSITORY_TOKEN } from './di/tokens';
+import { AUTH_REPOSITORY_TOKEN } from './di/tokens';
 
-// Domain Services
-import { UserDomainService } from '../domain/user/services/user.service';
+// Infrastructure Modules
+import { DatabaseModule } from '../infrastruct/database/database.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     TypeOrmModule.forFeature([LoginSessionEntity]),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-secret-key',
@@ -58,15 +59,7 @@ import { UserDomainService } from '../domain/user/services/user.service';
 
     // Guards
     JwtAuthGuard,
-
-    // Domain Services
-    UserDomainService,
   ],
-  exports: [
-    JwtAuthGuard,
-    AuthMapper,
-    AUTH_REPOSITORY_TOKEN,
-    JwtModule,
-  ],
+  exports: [JwtAuthGuard, AuthMapper, AUTH_REPOSITORY_TOKEN, JwtModule],
 })
 export class AuthModule {}

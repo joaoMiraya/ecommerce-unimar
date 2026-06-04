@@ -51,11 +51,11 @@ export class ProductRepositoryImpl implements IProductRepository {
    */
   async find(criteria: Partial<ProductEntity>): Promise<ProductEntity[]> {
     const where: FindOptionsWhere<ProductEntity> = {};
-    
+
     if (criteria.id) where.id = criteria.id;
     if (criteria.name) where.name = criteria.name;
     if (criteria.isActive !== undefined) where.isActive = criteria.isActive;
-    
+
     return this.dataSource
       .getRepository(ProductEntity)
       .find({ where, relations: ['seller'] });

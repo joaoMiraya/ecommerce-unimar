@@ -24,5 +24,8 @@ export interface IProductRepository extends IRepository<ProductEntity> {
   /**
    * Buscar com filtro de preço
    */
-  findByPriceRange(minPrice: number, maxPrice: number): Promise<ProductEntity[]>;
+  findByPriceRange(
+    minPrice: number,
+    maxPrice: number,
+  ): Promise<ProductEntity[]>;
 }

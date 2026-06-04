@@ -26,7 +26,9 @@ export class Email {
 
     // Validar comprimento
     if (!normalizedEmail || normalizedEmail.length > 254) {
-      throw new Error('Invalid email format: length must be between 1 and 254 characters');
+      throw new Error(
+        'Invalid email format: length must be between 1 and 254 characters',
+      );
     }
 
     // Regex RFC 5322 simplificado

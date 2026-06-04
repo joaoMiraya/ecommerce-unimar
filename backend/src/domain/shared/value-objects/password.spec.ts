@@ -12,11 +12,15 @@ describe('Password Value Object', () => {
     });
 
     it('should throw error for password without uppercase letter', () => {
-      expect(() => Password.create('nouppercase1@')).toThrow('uppercase letter');
+      expect(() => Password.create('nouppercase1@')).toThrow(
+        'uppercase letter',
+      );
     });
 
     it('should throw error for password without lowercase letter', () => {
-      expect(() => Password.create('NOLOWERCASE1@')).toThrow('lowercase letter');
+      expect(() => Password.create('NOLOWERCASE1@')).toThrow(
+        'lowercase letter',
+      );
     });
 
     it('should throw error for password without number', () => {
@@ -29,7 +33,9 @@ describe('Password Value Object', () => {
 
     it('should throw error for password exceeding 128 characters', () => {
       const longPassword = 'Aa1!' + 'a'.repeat(128);
-      expect(() => Password.create(longPassword)).toThrow('not exceed 128 characters');
+      expect(() => Password.create(longPassword)).toThrow(
+        'not exceed 128 characters',
+      );
     });
 
     it('should accept password with all requirements met', () => {
