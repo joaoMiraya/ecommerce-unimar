@@ -4,10 +4,22 @@ import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 
 export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
+});
+
+const getStore = async () => {
+  const { store } = await import('../store/store');
+  return store;
+};
+
+axiosInstance.interceptors.request.use(async (config) => {
+  const store = await getStore();
+  const accessToken = store.getState().auth.accessToken;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
 });
 
 axiosInstance.interceptors.response.use(
@@ -18,10 +30,29 @@ axiosInstance.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
       originalRequest._retry = true;
+
       try {
-        await axios.post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true });
+        const { data } = await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+
+        const store = await getStore();
+        const { setAccessToken } = await import('../features/auth/store/auth_slice');
+        store.dispatch(setAccessToken(data.accessToken));
+
+        originalRequest.headers = {
+          ...originalRequest.headers,
+          Authorization: `Bearer ${data.accessToken}`,
+        };
+
         return axiosInstance(originalRequest);
       } catch (refreshError) {
+        const store = await getStore();
+        const { logout } = await import('../features/auth/store/auth_slice');
+        store.dispatch(logout());
+        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
@@ -38,13 +69,7 @@ export const axiosBaseQuery = (): BaseQueryFn<{
   headers?: AxiosRequestConfig['headers'];
 }> => async ({ url, method, body, params, headers }) => {
   try {
-    const result = await axiosInstance({
-      url,
-      method,
-      data: body,
-      params,
-      headers,
-    });
+    const result = await axiosInstance({ url, method, data: body, params, headers });
     return { data: result.data };
   } catch (error) {
     const err = error as AxiosError;

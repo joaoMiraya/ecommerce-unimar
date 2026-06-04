@@ -3,6 +3,7 @@ import type { User } from "../../user/types/user.types";
 
 export interface AuthState {
     user: User | null;
+    accessToken: string | null;
     isAuthenticated: boolean;
 };
 
@@ -19,9 +20,8 @@ export interface LoginRequest {
 };
 
 export interface AuthResponse {
-    data: {
-        user: User;
-    }
-    message: string;
-    isSuccess: number;
+  data: {
+    user: User;
+    accessToken: string;
+  }
 };

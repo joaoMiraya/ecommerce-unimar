@@ -1,7 +1,6 @@
 
 
-export interface User {
+export type User = {
   name: string;
-  fullName: string;
   email: string;
 }

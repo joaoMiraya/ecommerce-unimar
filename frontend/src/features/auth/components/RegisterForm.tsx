@@ -1,10 +1,9 @@
 import { useState, type SubmitEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { useRegisterMutation } from "../queries/auth";
-import { useAppDispatch } from "../../../store/hooks";
-import { login as loginAction } from "../store/auth_slice";
 import type { AuthResponse } from '../types/auth.types';
 import { Button } from '../../../components/Button';
+import { useAuth } from '../hooks/useAuth';
 
 export const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -16,24 +15,24 @@ export const RegisterForm = () => {
 
   const [sending, setSending] = useState(false);
   const [registerApi] = useRegisterMutation();
-  const dispatch = useAppDispatch();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmitForm = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
     try {
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-      };
-      const response = await registerApi(payload).unwrap();
-      if (response && (response as AuthResponse).data.user) {
-        dispatch(loginAction({ user: (response as AuthResponse).data.user }));
-        navigate('/profile');
-      }
+        const payload = {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            confirmPassword: formData.confirmPassword,
+        };
+        const response: AuthResponse = await registerApi(payload).unwrap();
+        if (response) {             
+            login(response);
+            navigate('/profile');
+        }
     } catch (err) {
       console.error(err);
     } finally {

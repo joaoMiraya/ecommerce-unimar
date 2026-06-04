@@ -1,10 +1,9 @@
 import { useState, type SubmitEvent } from "react";
 import { useNavigate } from "react-router";
 import { useLoginMutation } from "../queries/auth";
-import { useAppDispatch } from "../../../store/hooks";
-import { login as loginAction } from "../store/auth_slice";
 import type { AuthResponse } from "../types/auth.types";
 import { Button } from "../../../components/Button";
+import { useAuth } from "../hooks/useAuth";
 
 export const LoginForm = () => {
     const [sending, setSending] = useState<boolean>(false);
@@ -14,16 +13,16 @@ export const LoginForm = () => {
     });
 
     const [loginApi] = useLoginMutation();
-    const dispatch = useAppDispatch();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmitForm = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSending(true);
         try {
-            const response = await loginApi(formData).unwrap();
-            if (response && (response as AuthResponse).data.user) {
-                dispatch(loginAction({ user: (response as AuthResponse).data.user }));
+            const response: AuthResponse = await loginApi(formData).unwrap();            
+            if (response) {
+                login(response);
                 navigate('/profile');
             }
         } catch (error) {
