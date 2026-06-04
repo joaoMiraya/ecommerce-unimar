@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { type JwtPayload } from '../../domain/auth/types/auth.types';
+import type { AuthenticatedUser } from '../decorators/current-user.decorator';
 
 /**
  * JWT Auth Guard
@@ -17,8 +18,10 @@ import { type JwtPayload } from '../../domain/auth/types/auth.types';
 export class JwtAuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+  canActivate(context: ExecutionContext): boolean {
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: AuthenticatedUser }>();
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
@@ -36,7 +39,7 @@ export class JwtAuthGuard implements CanActivate {
       };
 
       return true;
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
   }

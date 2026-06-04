@@ -23,6 +23,9 @@ import { OrderRepositoryImpl } from './repositories/order.repository.impl';
 import { UserDomainService } from '../../domain/user/services/user.service';
 import { ProductDomainService } from '../../domain/product/services/product.service';
 import { OrderDomainService } from '../../domain/order/services/order.service';
+import type { IUserRepository } from '../../domain/user/repositories/user.repository';
+import type { IProductRepository } from '../../domain/product/repositories/product.repository';
+import type { IOrderRepository } from '../../domain/order/repositories/order.repository';
 
 @Module({
   imports: [
@@ -55,19 +58,23 @@ import { OrderDomainService } from '../../domain/order/services/order.service';
     // Domain Services
     {
       provide: UserDomainService,
-      useFactory: (userRepo: any) => new UserDomainService(userRepo),
+      useFactory: (userRepo: IUserRepository) =>
+        new UserDomainService(userRepo),
       inject: [USER_REPOSITORY_TOKEN],
     },
     {
       provide: ProductDomainService,
-      useFactory: (productRepo: any) => new ProductDomainService(productRepo),
+      useFactory: (productRepo: IProductRepository) =>
+        new ProductDomainService(productRepo),
       inject: [PRODUCT_REPOSITORY_TOKEN],
     },
     {
       provide: OrderDomainService,
-      useFactory: (orderRepo: any, productRepo: any) =>
-        new OrderDomainService(orderRepo, productRepo),
-      inject: [PRODUCT_REPOSITORY_TOKEN, PRODUCT_REPOSITORY_TOKEN],
+      useFactory: (
+        orderRepo: IOrderRepository,
+        productRepo: IProductRepository,
+      ) => new OrderDomainService(orderRepo, productRepo),
+      inject: [ORDER_REPOSITORY_TOKEN, PRODUCT_REPOSITORY_TOKEN],
     },
   ],
   exports: [
@@ -81,4 +88,3 @@ import { OrderDomainService } from '../../domain/order/services/order.service';
   ],
 })
 export class DatabaseModule {}
-

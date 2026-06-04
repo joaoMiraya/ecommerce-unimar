@@ -29,7 +29,6 @@ export class AuthRepositoryImpl implements IAuthRepository {
   }
 
   async findActiveSession(userId: string): Promise<LoginSessionEntity | null> {
-    const now = new Date();
     return this.repository.findOne({
       where: {
         userId,

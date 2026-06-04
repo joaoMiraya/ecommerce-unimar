@@ -13,8 +13,10 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  * }
  */
 export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
+  (data: unknown, ctx: ExecutionContext): AuthenticatedUser | undefined => {
+    const request = ctx
+      .switchToHttp()
+      .getRequest<{ user?: AuthenticatedUser }>();
     return request.user;
   },
 );
@@ -40,8 +42,10 @@ export interface AuthenticatedUser {
  * }
  */
 export const CurrentUserId = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): string => {
-    const request = ctx.switchToHttp().getRequest();
+  (data: unknown, ctx: ExecutionContext): string | undefined => {
+    const request = ctx
+      .switchToHttp()
+      .getRequest<{ user?: AuthenticatedUser }>();
     return request.user?.userId;
   },
 );

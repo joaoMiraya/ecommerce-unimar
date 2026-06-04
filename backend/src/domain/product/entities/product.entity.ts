@@ -1,5 +1,6 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '../../shared/entities/base.entity';
+import type { UserEntity } from '../../user/entities/user.entity';
 
 /**
  * Entidade Product - Agregado de produto
@@ -24,7 +25,7 @@ export class ProductEntity extends BaseEntity {
 
   @ManyToOne('UserEntity')
   @JoinColumn({ name: 'seller_id' })
-  seller: any;
+  seller: UserEntity;
 
   constructor(props?: Partial<ProductEntity>) {
     super(props);

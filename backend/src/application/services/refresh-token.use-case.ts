@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import type { IAuthRepository } from '../../domain/auth/repositories/auth.repository';
 import { type IUnitOfWork } from '../../domain/shared/repositories/unit-of-work.interface';
 import { LoginSessionEntity } from '../../domain/auth/entities/login-session.entity';
-import { RefreshToken } from '../../domain/auth/value-objects/refresh-token';
 import { type JwtPayload } from '../../domain/auth/types/auth.types';
 import { UNIT_OF_WORK_TOKEN, AUTH_REPOSITORY_TOKEN } from '../di/tokens';
 

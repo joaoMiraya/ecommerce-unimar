@@ -79,7 +79,7 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  async logout(@CurrentUserId() userId: string) {
+  async logout(@CurrentUserId() userId: string | undefined) {
     if (!userId) {
       throw new UnauthorizedException('Usuário não autenticado');
     }
@@ -96,7 +96,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getProfile(@CurrentUserId() userId: string) {
+  getProfile(@CurrentUserId() userId: string | undefined) {
     // Este endpoint retorna as informações do usuário autenticado
     // As informações vêm do JWT, então aqui apenas confirmamos que o usuário está autenticado
     return {

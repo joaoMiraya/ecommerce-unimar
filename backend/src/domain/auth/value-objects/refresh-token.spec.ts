@@ -66,7 +66,7 @@ describe('RefreshToken Value Object', () => {
 
     it('should throw error for invalid expiration date', () => {
       expect(() =>
-        RefreshToken.createFromExisting('token', null as any),
+        RefreshToken.createFromExisting('token', null as unknown as Date),
       ).toThrow('must be a valid Date');
     });
   });

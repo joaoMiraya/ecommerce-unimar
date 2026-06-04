@@ -21,7 +21,7 @@ export class LoginRequestDto {
   @Matches(/[A-Z]/, { message: 'Password must contain uppercase letter' })
   @Matches(/[a-z]/, { message: 'Password must contain lowercase letter' })
   @Matches(/[0-9]/, { message: 'Password must contain number' })
-  @Matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, {
+  @Matches(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, {
     message: 'Password must contain special character',
   })
   password: string;

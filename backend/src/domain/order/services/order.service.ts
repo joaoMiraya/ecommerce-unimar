@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import type { IOrderRepository } from '../repositories/order.repository';
 import type { IProductRepository } from '../../product/repositories/product.repository';
 import { OrderEntity, OrderStatus } from '../entities/order.entity';
+import type { ProductEntity } from '../../product/entities/product.entity';
+import type { UserEntity } from '../../user/entities/user.entity';
 
 @Injectable()
 export class OrderDomainService {
@@ -10,11 +12,11 @@ export class OrderDomainService {
     private readonly productRepository: IProductRepository,
   ) {}
 
-  async createOrder(
-    buyer: any,
-    products: any[],
+  createOrder(
+    buyer: UserEntity,
+    products: ProductEntity[],
     shippingAddress: string,
-  ): Promise<OrderEntity> {
+  ): OrderEntity {
     if (!buyer) {
       throw new Error('Buyer is required');
     }
@@ -28,7 +30,7 @@ export class OrderDomainService {
     }
 
     const totalPrice = products.reduce(
-      (total, product) => total + Number(product.price),
+      (total, product) => total + product.price,
       0,
     );
 

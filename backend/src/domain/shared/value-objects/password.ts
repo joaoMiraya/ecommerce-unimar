@@ -66,9 +66,7 @@ export class Password {
     }
 
     // Validar se tem pelo menos um caractere especial
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
-      password,
-    );
+    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
     if (!hasSpecialChar) {
       throw new Error(
         'Password must contain at least one special character (!@#$%^&*...)',
@@ -102,7 +100,7 @@ export class Password {
   async compare(plainPassword: string): Promise<boolean> {
     try {
       return await bcrypt.compare(plainPassword, this._hashedValue);
-    } catch (error) {
+    } catch {
       return false;
     }
   }

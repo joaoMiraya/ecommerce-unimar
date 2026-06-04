@@ -3,11 +3,12 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  OneToMany,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
 import { BaseEntity } from '../../shared/entities/base.entity';
+import type { ProductEntity } from '../../product/entities/product.entity';
+import type { UserEntity } from '../../user/entities/user.entity';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -25,7 +26,7 @@ export enum OrderStatus {
 export class OrderEntity extends BaseEntity {
   @ManyToOne('UserEntity')
   @JoinColumn({ name: 'buyer_id' })
-  buyer: any;
+  buyer: UserEntity;
 
   @ManyToMany('ProductEntity')
   @JoinTable({
@@ -33,7 +34,7 @@ export class OrderEntity extends BaseEntity {
     joinColumn: { name: 'order_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'product_id', referencedColumnName: 'id' },
   })
-  products: any[];
+  products: ProductEntity[];
 
   @Column({ type: 'decimal', precision: 12, scale: 2 })
   totalPrice: number;
@@ -53,13 +54,15 @@ export class OrderEntity extends BaseEntity {
     if (props) {
       Object.assign(this, props);
     }
-    this.products = this.products || [];
   }
 
   /**
    * Método de domínio: adicionar produto ao pedido
    */
-  addProduct(product: any): void {
+  addProduct(product: ProductEntity): void {
+    if (!this.products) {
+      this.products = [];
+    }
     if (!this.products.find((p) => p.id === product.id)) {
       this.products.push(product);
     }
@@ -69,6 +72,9 @@ export class OrderEntity extends BaseEntity {
    * Método de domínio: remover produto do pedido
    */
   removeProduct(productId: string): void {
+    if (!this.products) {
+      this.products = [];
+    }
     this.products = this.products.filter((p) => p.id !== productId);
   }
 
@@ -119,7 +125,8 @@ export class OrderEntity extends BaseEntity {
    * Método de domínio: calcular preço total
    */
   calculateTotal(): number {
-    return this.products.reduce(
+    const products = this.products ?? [];
+    return products.reduce(
       (total, product) => total + Number(product.price),
       0,
     );

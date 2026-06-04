@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import type { IProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
+import type { UserEntity } from '../../user/entities/user.entity';
 
 @Injectable()
 export class ProductDomainService {
   constructor(private readonly productRepository: IProductRepository) {}
 
-  async createProduct(
+  createProduct(
     name: string,
     description: string,
     price: number,
     stock: number,
-    seller: any,
-  ): Promise<ProductEntity> {
+    seller: UserEntity,
+  ): ProductEntity {
     if (!name || name.trim().length === 0) {
       throw new Error('Product name is required');
     }

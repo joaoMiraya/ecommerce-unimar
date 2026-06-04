@@ -9,7 +9,9 @@ export const AppDataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'ecommerce_user',
   password: process.env.POSTGRES_PASSWORD || 'passwd',
   database: process.env.POSTGRES_NAME || 'ecommerce_db',
-  entities: [path.join(__dirname, '../../domain/**/entities/*.entity.{ts,js}')],
+  entities: [
+    path.join(__dirname, '../../../domain/**/entities/*.entity.{ts,js}'),
+  ],
   migrations: [path.join(__dirname, '../migrations/*.{ts,js}')],
   subscribers: [path.join(__dirname, '../subscribers/*.{ts,js}')],
   synchronize: process.env.NODE_ENV !== 'production',

@@ -75,7 +75,7 @@ describe('Password Value Object', () => {
   });
 
   describe('compare', () => {
-    it('should compare password correctly', async () => {
+    it('should compare password correctly', () => {
       const password = Password.create('ValidP@ss123');
       const plainPassword = password.plainValue;
 
