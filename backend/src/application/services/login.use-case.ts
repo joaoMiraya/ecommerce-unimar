@@ -14,6 +14,7 @@ import {
   USER_REPOSITORY_TOKEN,
   AUTH_REPOSITORY_TOKEN,
 } from '../di/tokens';
+import { CleanUser } from 'src/domain/user/DTOs/user.dto';
 
 export interface LoginUseCaseInput {
   email: string;
@@ -23,8 +24,9 @@ export interface LoginUseCaseInput {
 }
 
 export interface LoginUseCaseOutput {
-  session: LoginSessionEntity;
+  user: CleanUser;
   accessToken: string;
+  refreshToken: RefreshToken;
 }
 
 /**
@@ -66,12 +68,12 @@ export class LoginUseCase {
       const jwtPayload: JwtPayload = {
         sub: user.id,
         email: user.email,
-        iat: Math.floor(now.getTime() / 1000),
-        exp: Math.floor(now.getTime() / 1000) + accessTokenExpiresIn,
         type: 'access',
       };
 
-      const accessToken = this.jwtService.sign(jwtPayload);
+      const accessToken = this.jwtService.sign(jwtPayload, {
+        expiresIn: accessTokenExpiresIn,
+      });
 
       const expiresAt = new Date(now.getTime() + accessTokenExpiresIn * 1000);
       const session = LoginSessionEntity.create({
@@ -86,9 +88,15 @@ export class LoginUseCase {
 
       await this.authRepository.saveSession(session);
 
+      const cleanUser: CleanUser = {
+        name: user.name,
+        email: user.email,
+      };
+
       return {
-        session,
+        user: cleanUser,
         accessToken,
+        refreshToken,
       };
     });
   }

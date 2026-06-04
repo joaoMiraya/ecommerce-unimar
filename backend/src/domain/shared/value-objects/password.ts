@@ -1,102 +1,48 @@
 import * as bcrypt from 'bcrypt';
 
-/**
- * Value Object para Password
- * Encapsula validação de força de senha e hashing seguro
- * Imutável: uma vez criado, não pode ser alterado
- */
 export class Password {
   private readonly _hashedValue: string;
-  private readonly _plainValue?: string; // Armazenado temporariamente apenas na criação
 
-  private constructor(hashedValue: string, plainValue?: string) {
+  private constructor(hashedValue: string) {
     this._hashedValue = hashedValue;
-    this._plainValue = plainValue;
   }
 
-  /**
-   * Factory method para criar uma Password hasheada
-   * @param value - Senha em texto plano
-   * @returns Password instance com hash
-   * @throws Error se senha inválida
-   */
-  static create(value: string): Password {
-    this.validate(value);
-    return new Password('', value); // Armazenar plainValue temporariamente
+  /** Cria uma senha hasheada a partir do texto plano */
+  static async create(value: string): Promise<Password> {
+    Password.validate(value);
+    const hashed = await bcrypt.hash(value, 12);
+    return new Password(hashed);
   }
 
-  /**
-   * Factory method para criar a partir de um hash existente
-   * Usado ao carregar do banco de dados
-   */
+  /** Reconstitui a partir de um hash existente (vindo do banco) */
   static createFromHash(hashedValue: string): Password {
-    if (!hashedValue || hashedValue.length === 0) {
+    if (!hashedValue) {
       throw new Error('Hashed password cannot be empty');
     }
     return new Password(hashedValue);
   }
 
   private static validate(password: string): void {
-    // Validar comprimento mínimo
-    if (!password || password.length < 8) {
+    if (!password || password.length < 8)
       throw new Error('Password must be at least 8 characters long');
-    }
-
-    // Validar comprimento máximo
-    if (password.length > 128) {
+    if (password.length > 128)
       throw new Error('Password must not exceed 128 characters');
-    }
-
-    // Validar se tem pelo menos uma letra maiúscula
-    const hasUpperCase = /[A-Z]/.test(password);
-    if (!hasUpperCase) {
+    if (!/[A-Z]/.test(password))
       throw new Error('Password must contain at least one uppercase letter');
-    }
-
-    // Validar se tem pelo menos uma letra minúscula
-    const hasLowerCase = /[a-z]/.test(password);
-    if (!hasLowerCase) {
+    if (!/[a-z]/.test(password))
       throw new Error('Password must contain at least one lowercase letter');
-    }
-
-    // Validar se tem pelo menos um número
-    const hasNumbers = /[0-9]/.test(password);
-    if (!hasNumbers) {
+    if (!/[0-9]/.test(password))
       throw new Error('Password must contain at least one number');
-    }
-
-    // Validar se tem pelo menos um caractere especial
-    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
-    if (!hasSpecialChar) {
-      throw new Error(
-        'Password must contain at least one special character (!@#$%^&*...)',
-      );
-    }
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password))
+      throw new Error('Password must contain at least one special character');
   }
 
-  /**
-   * Obtém o valor hasheado da senha
-   * NUNCA retorna a senha em texto plano
-   */
+  /** Hash da senha — nunca expõe o texto plano */
   get value(): string {
     return this._hashedValue;
   }
 
-  /**
-   * Obtém a senha em texto plano (apenas logo após criação)
-   * Usado para hashear antes de persistir
-   * NUNCA deve ser armazenado em banco de dados
-   */
-  get plainValue(): string | undefined {
-    return this._plainValue;
-  }
-
-  /**
-   * Compara a senha em texto plano com o hash armazenado
-   * Usa bcrypt.compare para comparação segura
-   * @param plainPassword - Senha em texto plano para comparar
-   * @returns true se as senhas combinam
-   */
+  /** Verifica se uma senha em texto plano corresponde ao hash */
   async compare(plainPassword: string): Promise<boolean> {
     try {
       return await bcrypt.compare(plainPassword, this._hashedValue);
@@ -106,17 +52,10 @@ export class Password {
   }
 
   /**
-   * Compara duas instâncias de Password
-   * Compara os hashes, não o texto plano
+   * Compara dois objetos Password pelo hash armazenado.
+   * Útil apenas quando ambos foram reconstituídos do banco com o mesmo hash.
    */
   equals(other: Password): boolean {
     return this._hashedValue === other._hashedValue;
-  }
-
-  /**
-   * Retorna uma representação string segura (sem expor a senha)
-   */
-  toString(): string {
-    return '[Password - REDACTED]';
   }
 }

@@ -4,21 +4,22 @@ import {
   Get,
   Body,
   HttpStatus,
-  ValidationPipe,
   UseGuards,
   BadRequestException,
   UnauthorizedException,
+  Res,
+  Req,
 } from '@nestjs/common';
-import { type RegisterSchema, RegisterDto } from '../schemas/auth.schema';
+import { RegisterDto, AuthSchema } from '../schemas/auth.schema';
 import { CreateUserUseCase } from '../services/create-user.use-case';
 import { LoginUseCase } from '../services/login.use-case';
 import { RefreshTokenUseCase } from '../services/refresh-token.use-case';
 import { LogoutUseCase } from '../services/logout.use-case';
 import { LoginRequestDto } from '../dtos/auth/auth-requests.dto';
-import { RefreshTokenRequestDto } from '../dtos/auth/auth-requests.dto';
 import { AuthMapper } from '../mappers/auth.mapper';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUserId } from '../decorators/current-user.decorator';
+import { type Request, type Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -32,30 +33,66 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    registerDto: RegisterDto,
-  ): Promise<RegisterSchema> {
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthSchema> {
     if (registerDto.password !== registerDto.confirmPassword) {
       throw new BadRequestException('Senhas não coincidem');
     }
 
-    await this.createUserUseCase.execute(registerDto);
+    try {
+      await this.createUserUseCase.execute(registerDto);
+      const loginDto: LoginRequestDto = {
+        email: registerDto.email,
+        password: registerDto.password,
+      };
 
-    return {
-      status: HttpStatus.CREATED,
-      data: {
-        message: 'Usuário criado com sucesso',
-      },
-    };
+      const response = await this.loginUseCase.execute(loginDto);
+      res.cookie('refresh_token', response.refreshToken.value, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'strict',
+        path: '/auth/refresh',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+      });
+
+      return {
+        status: HttpStatus.CREATED,
+        data: {
+          user: response.user,
+          accessToken: response.accessToken,
+        },
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        error instanceof Error ? error.message : 'Falha ao cadastrar usuário',
+      );
+    }
   }
 
   @Post('login')
   async login(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    loginDto: LoginRequestDto,
-  ) {
+    @Body() loginDto: LoginRequestDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthSchema> {
     try {
-      return await this.loginUseCase.execute(loginDto);
+      const response = await this.loginUseCase.execute(loginDto);
+
+      res.cookie('refresh_token', response.refreshToken.value, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'strict',
+        path: '/auth/refresh',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+      });
+
+      return {
+        status: HttpStatus.ACCEPTED,
+        data: {
+          user: response.user,
+          accessToken: response.accessToken,
+        },
+      };
     } catch (error) {
       throw new UnauthorizedException(
         error instanceof Error ? error.message : 'Falha ao realizar login',
@@ -63,14 +100,26 @@ export class AuthController {
     }
   }
 
-  @Post('refresh-token')
+  @Post('refresh')
   async refreshToken(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    refreshTokenDto: RefreshTokenRequestDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const refreshToken = req.cookies?.refresh_token as string;
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token não encontrado');
+    }
+
     try {
-      return await this.refreshTokenUseCase.execute(refreshTokenDto);
+      const { accessToken } = await this.refreshTokenUseCase.execute({
+        refreshToken,
+      });
+
+      return { accessToken };
     } catch (error) {
+      res.clearCookie('refresh_token', { path: '/auth/refresh' });
       throw new UnauthorizedException(
         error instanceof Error ? error.message : 'Falha ao renovar token',
       );
@@ -79,7 +128,7 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  async logout(@CurrentUserId() userId: string | undefined) {
+  async logout(@CurrentUserId() userId: string) {
     if (!userId) {
       throw new UnauthorizedException('Usuário não autenticado');
     }
@@ -94,17 +143,17 @@ export class AuthController {
     };
   }
 
-  @Get('me')
-  @UseGuards(JwtAuthGuard)
-  getProfile(@CurrentUserId() userId: string | undefined) {
-    // Este endpoint retorna as informações do usuário autenticado
-    // As informações vêm do JWT, então aqui apenas confirmamos que o usuário está autenticado
-    return {
-      status: HttpStatus.OK,
-      data: {
-        message: 'Perfil do usuário',
-        userId,
-      },
-    };
-  }
+  // @Get('me')
+  // @UseGuards(JwtAuthGuard)
+  // async getProfile(@CurrentUserId() userId: string) {
+  //   // Este endpoint retorna as informações do usuário autenticado
+  //   // As informações vêm do JWT, então aqui apenas confirmamos que o usuário está autenticado
+  //   return {
+  //     status: HttpStatus.OK,
+  //     data: {
+  //       message: 'Perfil do usuário',
+  //       userId,
+  //     },
+  //   };
+  // }
 }

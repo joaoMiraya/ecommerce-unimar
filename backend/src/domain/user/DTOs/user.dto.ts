@@ -1,6 +1,4 @@
-import { Password } from 'src/domain/shared/value-objects/password';
-
-export class User {
+export class CleanUser {
   name: string;
-  password: Password;
+  email: string;
 }

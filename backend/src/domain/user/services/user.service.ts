@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { IUserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { Email } from 'src/domain/shared/value-objects/email';
+import { Password } from 'src/domain/shared/value-objects/password';
 
 @Injectable()
 export class UserDomainService {
@@ -12,7 +13,9 @@ export class UserDomainService {
     email: string,
     password: string,
   ): Promise<UserEntity> {
-    const emailExists = await this.userRepository.emailExists(email);
+    const emailVO = Email.create(email);
+    const emailExists = await this.userRepository.emailExists(emailVO.value);
+
     if (emailExists) {
       throw new Error(`Email ${email} already registered`);
     }
@@ -21,18 +24,13 @@ export class UserDomainService {
       throw new Error('User name is required');
     }
 
-    if (!email || email.trim().length === 0) {
-      throw new Error('User email is required');
-    }
-
-    if (!password || password.length < 6) {
-      throw new Error('Password must be at least 6 characters');
-    }
+    const passwordVO = Password.create(password);
+    const hashedPassword = (await passwordVO).value;
 
     const user = new UserEntity({
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      password,
+      password: hashedPassword,
       isActive: true,
     });
 

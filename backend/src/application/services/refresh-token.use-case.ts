@@ -57,13 +57,13 @@ export class RefreshTokenUseCase {
 
       const jwtPayload: JwtPayload = {
         sub: session.userId,
-        email: session.user?.email || '', // Será preenchido quando carregar user
-        iat: Math.floor(now.getTime() / 1000),
-        exp: Math.floor(now.getTime() / 1000) + accessTokenExpiresIn,
+        email: session.user?.email || '',
         type: 'access',
       };
 
-      const newAccessToken = this.jwtService.sign(jwtPayload);
+      const newAccessToken = this.jwtService.sign(jwtPayload, {
+        expiresIn: accessTokenExpiresIn,
+      });
 
       // 5. Atualizar sessão
       const newExpiresAt = new Date(

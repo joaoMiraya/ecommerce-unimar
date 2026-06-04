@@ -20,9 +20,9 @@ export interface AuthCredentials {
 export interface JwtPayload {
   sub: string; // User ID
   email: string;
-  iat: number; // Issued at
-  exp: number; // Expiration time
   type: 'access'; // Tipo de token
+  iat?: number; // Issued at
+  exp?: number; // Expiration time
 }
 
 /**
