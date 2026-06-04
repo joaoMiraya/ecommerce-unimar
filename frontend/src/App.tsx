@@ -9,7 +9,9 @@ function App() {
   return (
     <>
       <Header/>
-      <Outlet/>
+      <div className='bg-[#D1AC2B] p-4 min-h-screen'>
+        <Outlet/>
+      </div>
       <Footer/>
     </>
   )

@@ -7,10 +7,10 @@ export interface AuthState {
 };
 
 export interface RegisterRequest {
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     password: string;
+    confirmPassword: string;
 };
 
 export interface LoginRequest {

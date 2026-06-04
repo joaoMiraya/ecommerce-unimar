@@ -1,20 +1,31 @@
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
 import App from '../App.tsx'
 import { PrivateRoute } from './route.private.tsx';
 import { Profile } from '../pages/Profile.tsx';
 import { Home } from '../pages/Home.tsx';
+import { Login } from '../pages/Login.tsx';
+import { Register } from '../pages/Register.tsx';
+import { store, persistor } from '../store/store';
 
 const root = createRoot(document.getElementById('root')!);
 
 root.render(
-  <BrowserRouter>
-    <Routes>
-      <Route path='/' element={ <App /> }>
-      <Route path='/home' element={ <Home /> } />
-        <Route path='/profile' element={ <PrivateRoute><Profile /></PrivateRoute> } />
-      </Route>
-    </Routes>
-  </BrowserRouter>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={ <App /> }>
+            <Route path='/home' element={ <Home /> } />
+            <Route path='/login' element={ <Login /> } />
+            <Route path='/register' element={ <Register /> } />
+            <Route path='/profile' element={ <PrivateRoute><Profile /></PrivateRoute> } />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </PersistGate>
+  </Provider>
 )
