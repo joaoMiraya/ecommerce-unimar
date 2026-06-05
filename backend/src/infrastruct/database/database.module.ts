@@ -5,6 +5,7 @@ import {
   USER_REPOSITORY_TOKEN,
   PRODUCT_REPOSITORY_TOKEN,
   ORDER_REPOSITORY_TOKEN,
+  ADDRESS_REPOSITORY_TOKEN,
 } from '../../application/di/tokens';
 
 // Entities
@@ -26,6 +27,7 @@ import { OrderDomainService } from '../../domain/order/services/order.service';
 import type { IUserRepository } from '../../domain/user/repositories/user.repository';
 import type { IProductRepository } from '../../domain/product/repositories/product.repository';
 import type { IOrderRepository } from '../../domain/order/repositories/order.repository';
+import { AddressRepositoryImpl } from './repositories/address.repository.impl';
 
 @Module({
   imports: [
@@ -46,6 +48,10 @@ import type { IOrderRepository } from '../../domain/order/repositories/order.rep
     {
       provide: USER_REPOSITORY_TOKEN,
       useClass: UserRepositoryImpl,
+    },
+    {
+      provide: ADDRESS_REPOSITORY_TOKEN,
+      useClass: AddressRepositoryImpl,
     },
     {
       provide: PRODUCT_REPOSITORY_TOKEN,

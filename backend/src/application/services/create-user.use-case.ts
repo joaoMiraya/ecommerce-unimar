@@ -4,7 +4,6 @@ import type { IUnitOfWork } from '../../domain/shared/repositories/unit-of-work.
 import { UserDomainService } from '../../domain/user/services/user.service';
 import { UserEntity } from '../../domain/user/entities/user.entity';
 import { UNIT_OF_WORK_TOKEN, USER_REPOSITORY_TOKEN } from '../di/tokens';
-import { Password } from 'src/domain/shared/value-objects/password';
 
 export interface CreateUserInput {
   name: string;

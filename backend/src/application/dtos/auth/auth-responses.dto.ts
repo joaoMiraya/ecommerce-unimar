@@ -23,9 +23,7 @@ export class RefreshTokenResponseDto {
  * Nunca expõe a senha
  */
 export class UserAuthDto {
-  id: string;
   email: string;
   name: string;
   createdAt: Date;
-  isActive: boolean;
 }

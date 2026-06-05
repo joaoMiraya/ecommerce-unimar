@@ -47,6 +47,16 @@ export class UserDomainService {
     return user;
   }
 
+  async getUserById(id: string): Promise<UserEntity | null> {
+    const user = await this.userRepository.findById(id);
+
+    if (user && !user.isActive) {
+      throw new Error('User account is deactivated');
+    }
+
+    return user;
+  }
+
   async updateUserInfo(
     userId: string,
     name: string,

@@ -10,7 +10,7 @@ import { RefreshToken } from '../value-objects/refresh-token';
  */
 @Entity('login_sessions')
 @Index(['userId', 'isActive'])
-@Index(['refreshTokenValue']) // Para buscar sessões por refresh token
+@Index(['refreshTokenValue'])
 export class LoginSessionEntity extends BaseEntity {
   @Column()
   userId: string;

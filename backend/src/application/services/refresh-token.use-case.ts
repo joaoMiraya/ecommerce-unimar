@@ -2,16 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { IAuthRepository } from '../../domain/auth/repositories/auth.repository';
 import { type IUnitOfWork } from '../../domain/shared/repositories/unit-of-work.interface';
-import { LoginSessionEntity } from '../../domain/auth/entities/login-session.entity';
 import { type JwtPayload } from '../../domain/auth/types/auth.types';
 import { UNIT_OF_WORK_TOKEN, AUTH_REPOSITORY_TOKEN } from '../di/tokens';
+import { AuthMapper } from '../mappers/auth.mapper';
+import { UserAuthDto } from '../dtos/auth';
 
 export interface RefreshTokenUseCaseInput {
   refreshToken: string;
 }
 
 export interface RefreshTokenUseCaseOutput {
-  session: LoginSessionEntity;
+  user: UserAuthDto;
   accessToken: string;
 }
 
@@ -26,6 +27,7 @@ export class RefreshTokenUseCase {
     private readonly unitOfWork: IUnitOfWork,
     @Inject(AUTH_REPOSITORY_TOKEN)
     private readonly authRepository: IAuthRepository,
+    private readonly authMapper: AuthMapper,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -33,7 +35,6 @@ export class RefreshTokenUseCase {
     input: RefreshTokenUseCaseInput,
   ): Promise<RefreshTokenUseCaseOutput> {
     return this.unitOfWork.execute(async () => {
-      // 1. Buscar sessão pelo refresh token
       const session = await this.authRepository.findByRefreshToken(
         input.refreshToken,
       );
@@ -41,17 +42,14 @@ export class RefreshTokenUseCase {
         throw new Error('Invalid refresh token');
       }
 
-      // 2. Validar se refresh token está válido
       if (!session.isRefreshTokenValid()) {
         throw new Error('Refresh token expired or invalid');
       }
 
-      // 3. Validar se sessão está ativa
       if (!session.isActive) {
         throw new Error('Session is not active');
       }
 
-      // 4. Gerar novo access token
       const now = new Date();
       const accessTokenExpiresIn = 15 * 60; // 15 minutos
 
@@ -65,17 +63,15 @@ export class RefreshTokenUseCase {
         expiresIn: accessTokenExpiresIn,
       });
 
-      // 5. Atualizar sessão
       const newExpiresAt = new Date(
         now.getTime() + accessTokenExpiresIn * 1000,
       );
       session.renewAccessToken(newAccessToken, newExpiresAt);
 
-      // 6. Persistir sessão atualizada
       await this.authRepository.updateSession(session);
-
+      const user: UserAuthDto = this.authMapper.toUserAuthDto(session.user);
       return {
-        session,
+        user,
         accessToken: newAccessToken,
       };
     });

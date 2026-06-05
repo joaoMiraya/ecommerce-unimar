@@ -43,6 +43,7 @@ export class AuthRepositoryImpl implements IAuthRepository {
   ): Promise<LoginSessionEntity | null> {
     return this.repository.findOne({
       where: { refreshTokenValue: refreshToken },
+      relations: { user: true },
     });
   }
 

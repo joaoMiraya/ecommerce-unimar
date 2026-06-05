@@ -28,6 +28,7 @@ import { AUTH_REPOSITORY_TOKEN } from './di/tokens';
 
 // Infrastructure Modules
 import { DatabaseModule } from '../infrastruct/database/database.module';
+import { GetProfileUseCase } from './services/get-profile.use-case';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { DatabaseModule } from '../infrastruct/database/database.module';
     // Use Cases
     CreateUserUseCase,
     LoginUseCase,
+    GetProfileUseCase,
     RefreshTokenUseCase,
     LogoutUseCase,
 

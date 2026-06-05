@@ -6,7 +6,7 @@ import {
   IsOptional,
   Matches,
 } from 'class-validator';
-import { CleanUser } from 'src/domain/user/DTOs/user.dto';
+import { UserAuthDto } from '../dtos/auth';
 
 // DTOs para validação de entrada
 export class RegisterDto {
@@ -59,6 +59,6 @@ export type AuthSchema = {
 };
 
 export type LoginSchema = {
-  user: CleanUser;
+  user: UserAuthDto;
   accessToken: string;
 };

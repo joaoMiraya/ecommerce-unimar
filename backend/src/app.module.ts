@@ -4,7 +4,7 @@ import { AppController } from './application/controllers/app.controller';
 import { LoggerMiddleware } from './application/middlewares/logger.middleware';
 
 // Infrastructure
-import { AppDataSource } from './infrastruct/database/config/data-source';
+import AppDataSource from './infrastruct/database/config/data-source';
 import { DatabaseModule } from './infrastruct/database/database.module';
 
 // Modules
@@ -22,6 +22,6 @@ import { AuthModule } from './application/auth.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('health');
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

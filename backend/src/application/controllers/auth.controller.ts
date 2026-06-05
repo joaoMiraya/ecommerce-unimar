@@ -16,19 +16,19 @@ import { LoginUseCase } from '../services/login.use-case';
 import { RefreshTokenUseCase } from '../services/refresh-token.use-case';
 import { LogoutUseCase } from '../services/logout.use-case';
 import { LoginRequestDto } from '../dtos/auth/auth-requests.dto';
-import { AuthMapper } from '../mappers/auth.mapper';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUserId } from '../decorators/current-user.decorator';
 import { type Request, type Response } from 'express';
+import { GetProfileUseCase } from '../services/get-profile.use-case';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly loginUseCase: LoginUseCase,
+    private readonly getProfileUseCase: GetProfileUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly logoutUseCase: LogoutUseCase,
-    private readonly authMapper: AuthMapper,
   ) {}
 
   @Post('register')
@@ -82,7 +82,7 @@ export class AuthController {
         httpOnly: true,
         secure: false,
         sameSite: 'strict',
-        path: '/auth/refresh',
+        path: '/api/auth/refresh',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
       });
 
@@ -104,8 +104,7 @@ export class AuthController {
   async refreshToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  ): Promise<AuthSchema> {
     const refreshToken = req.cookies?.refresh_token as string;
 
     if (!refreshToken) {
@@ -113,13 +112,19 @@ export class AuthController {
     }
 
     try {
-      const { accessToken } = await this.refreshTokenUseCase.execute({
+      const { accessToken, user } = await this.refreshTokenUseCase.execute({
         refreshToken,
       });
 
-      return { accessToken };
+      return {
+        status: HttpStatus.OK,
+        data: {
+          user,
+          accessToken,
+        },
+      };
     } catch (error) {
-      res.clearCookie('refresh_token', { path: '/auth/refresh' });
+      res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
       throw new UnauthorizedException(
         error instanceof Error ? error.message : 'Falha ao renovar token',
       );
@@ -143,17 +148,17 @@ export class AuthController {
     };
   }
 
-  // @Get('me')
-  // @UseGuards(JwtAuthGuard)
-  // async getProfile(@CurrentUserId() userId: string) {
-  //   // Este endpoint retorna as informações do usuário autenticado
-  //   // As informações vêm do JWT, então aqui apenas confirmamos que o usuário está autenticado
-  //   return {
-  //     status: HttpStatus.OK,
-  //     data: {
-  //       message: 'Perfil do usuário',
-  //       userId,
-  //     },
-  //   };
-  // }
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUserId() userId: string) {
+    // Este endpoint retorna as informações do usuário autenticado
+    // As informações vêm do JWT, então aqui apenas confirmamos que o usuário está autenticado
+    const user = await this.getProfileUseCase.execute(userId);
+    return {
+      status: HttpStatus.OK,
+      data: {
+        user,
+      },
+    };
+  }
 }

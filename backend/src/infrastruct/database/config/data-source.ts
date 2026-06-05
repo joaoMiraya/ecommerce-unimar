@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import * as path from 'path';
 
-export const AppDataSource = new DataSource({
+const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.POSTGRES_HOST || 'postgres',
   port: parseInt(process.env.POSTGRES_PORT || '5432'),
@@ -18,3 +18,5 @@ export const AppDataSource = new DataSource({
   logging: process.env.NODE_ENV !== 'production',
   migrationsRun: false,
 });
+
+export default AppDataSource;

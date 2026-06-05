@@ -1,5 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../shared/entities/base.entity';
+import { AddressEntity } from '../../address/entities/address.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -14,6 +15,9 @@ export class UserEntity extends BaseEntity {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => AddressEntity, (address) => address.user)
+  addresses: AddressEntity[];
 
   constructor(props?: Partial<UserEntity>) {
     super(props);

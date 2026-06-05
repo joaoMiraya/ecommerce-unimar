@@ -61,11 +61,9 @@ export class AuthMapper {
    */
   toUserAuthDto(user: UserEntity): UserAuthDto {
     return {
-      id: user.id,
       email: user.email,
       name: user.name,
       createdAt: user.createdAt,
-      isActive: user.isActive,
     };
   }
 

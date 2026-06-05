@@ -14,7 +14,8 @@ import {
   USER_REPOSITORY_TOKEN,
   AUTH_REPOSITORY_TOKEN,
 } from '../di/tokens';
-import { CleanUser } from 'src/domain/user/DTOs/user.dto';
+import { AuthMapper } from '../mappers/auth.mapper';
+import { UserAuthDto } from '../dtos/auth';
 
 export interface LoginUseCaseInput {
   email: string;
@@ -24,7 +25,7 @@ export interface LoginUseCaseInput {
 }
 
 export interface LoginUseCaseOutput {
-  user: CleanUser;
+  user: UserAuthDto;
   accessToken: string;
   refreshToken: RefreshToken;
 }
@@ -43,6 +44,7 @@ export class LoginUseCase {
     @Inject(AUTH_REPOSITORY_TOKEN)
     private readonly authRepository: IAuthRepository,
     private readonly userDomainService: UserDomainService,
+    private readonly authMapper: AuthMapper,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -88,10 +90,7 @@ export class LoginUseCase {
 
       await this.authRepository.saveSession(session);
 
-      const cleanUser: CleanUser = {
-        name: user.name,
-        email: user.email,
-      };
+      const cleanUser: UserAuthDto = this.authMapper.toUserAuthDto(user);
 
       return {
         user: cleanUser,
