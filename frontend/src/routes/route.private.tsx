@@ -7,9 +7,11 @@ type Props = {
 };
 
 export const PrivateRoute = ({ children }: Props) => {
-    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const authState = useAppSelector((state) => state.auth);
+    const isAuthenticated = authState.isAuthenticated;
+    const isInitialized = authState.isInitialized;
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && isInitialized) {
     return <Navigate to="/login" replace />;
   }
 

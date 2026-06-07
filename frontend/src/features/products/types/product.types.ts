@@ -1,7 +1,20 @@
 
 export interface Product {
   name: string;
-  price: number;
   description: string;
-  soldout: boolean;
+  price: number;
+  stock: number;
+}
+
+export type ProductResponse<T> = {
+  status: number;
+  data: {
+    product: T,
+    message: string;
+  }
+}
+
+export type ProductRequest = {
+  page: number;
+  limit: number;
 }

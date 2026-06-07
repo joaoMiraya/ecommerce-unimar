@@ -1,10 +1,11 @@
-import type { User } from "../../user/types/user.types";
+import type { BasicUser } from "../../user/types/user.types";
 
 
 export interface AuthState {
-    user: User | null;
+    user: BasicUser | null;
     accessToken: string | null;
     isAuthenticated: boolean;
+    isInitialized: boolean;
 };
 
 export interface RegisterRequest {
@@ -19,9 +20,10 @@ export interface LoginRequest {
     password: string;
 };
 
-export interface AuthResponse {
+export interface AuthResponse<T> {
+  status: number;
   data: {
-    user: User;
+    user: T;
     accessToken: string;
   }
 };

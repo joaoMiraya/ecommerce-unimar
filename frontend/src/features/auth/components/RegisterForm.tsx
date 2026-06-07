@@ -1,9 +1,9 @@
 import { useState, type SubmitEvent } from 'react';
-import { useNavigate } from 'react-router';
 import { useRegisterMutation } from "../queries/auth";
 import type { AuthResponse } from '../types/auth.types';
 import { Button } from '../../../components/Button';
 import { useAuth } from '../hooks/useAuth';
+import type { BasicUser } from '../../user/types/user.types';
 
 export const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +16,6 @@ export const RegisterForm = () => {
   const [sending, setSending] = useState(false);
   const [registerApi] = useRegisterMutation();
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmitForm = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,10 +27,9 @@ export const RegisterForm = () => {
             password: formData.password,
             confirmPassword: formData.confirmPassword,
         };
-        const response: AuthResponse = await registerApi(payload).unwrap();
+        const response: AuthResponse<BasicUser> = await registerApi(payload).unwrap();
         if (response) {             
             login(response);
-            navigate('/profile');
         }
     } catch (err) {
       console.error(err);
