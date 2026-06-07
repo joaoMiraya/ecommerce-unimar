@@ -15,7 +15,12 @@ export class UserRepositoryImpl implements IUserRepository {
    * Buscar usuário por ID
    */
   async findById(id: string): Promise<UserEntity | null> {
-    return this.dataSource.getRepository(UserEntity).findOne({ where: { id } });
+    return this.dataSource.getRepository(UserEntity).findOne({
+      where: { id },
+      relations: {
+        addresses: true,
+      },
+    });
   }
 
   /**

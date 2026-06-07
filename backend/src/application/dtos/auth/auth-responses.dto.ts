@@ -1,3 +1,5 @@
+import { FullAddress } from "../address/create-address.dto";
+
 /**
  * DTO para resposta de login
  * Contém os tokens e informações do usuário autenticado
@@ -26,4 +28,11 @@ export class UserAuthDto {
   email: string;
   name: string;
   createdAt: Date;
+}
+
+export class FullCleanUser {
+  email: string;
+  name: string;
+  createdAt: Date;
+  addresses?: FullAddress[];
 }

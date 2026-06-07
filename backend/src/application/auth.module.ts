@@ -10,6 +10,7 @@ import { CreateUserUseCase } from './services/create-user.use-case';
 import { LoginUseCase } from './services/login.use-case';
 import { RefreshTokenUseCase } from './services/refresh-token.use-case';
 import { LogoutUseCase } from './services/logout.use-case';
+import { GetProfileUseCase } from './services/get-profile.use-case';
 
 // Repositories
 import { AuthRepositoryImpl } from '../infrastruct/database/repositories/auth.repository.impl';
@@ -28,7 +29,6 @@ import { AUTH_REPOSITORY_TOKEN } from './di/tokens';
 
 // Infrastructure Modules
 import { DatabaseModule } from '../infrastruct/database/database.module';
-import { GetProfileUseCase } from './services/get-profile.use-case';
 
 @Module({
   imports: [

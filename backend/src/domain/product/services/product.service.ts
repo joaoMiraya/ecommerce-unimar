@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { IProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
 import type { UserEntity } from '../../user/entities/user.entity';
+import { PRODUCT_REPOSITORY_TOKEN } from 'src/application/di/tokens';
 
 @Injectable()
 export class ProductDomainService {
-  constructor(private readonly productRepository: IProductRepository) {}
+  constructor(
+    @Inject(PRODUCT_REPOSITORY_TOKEN)
+    private readonly productRepository: IProductRepository,
+  ) {}
 
   createProduct(
     name: string,

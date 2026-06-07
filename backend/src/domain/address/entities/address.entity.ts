@@ -60,10 +60,10 @@ export class AddressEntity extends BaseEntity {
     }
 
     if (props.number !== undefined) {
-      if (props.number !== undefined) {
+      if (props.number.trim().length === 0) {
         throw new Error('Number cannot be empty');
       }
-      this.number = props.number;
+      this.number = props.number.trim();
     }
 
     if (props.neighborhood !== undefined) {

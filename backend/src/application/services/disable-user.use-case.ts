@@ -2,30 +2,25 @@ import { Inject, Injectable } from '@nestjs/common';
 import { type IUnitOfWork } from '../../domain/shared/repositories/unit-of-work.interface';
 import { UserDomainService } from '../../domain/user/services/user.service';
 import { UNIT_OF_WORK_TOKEN } from '../di/tokens';
-import { AuthMapper } from '../mappers/auth.mapper';
-import { FullCleanUser } from '../dtos/auth/auth-responses.dto';
 
 /**
  * Use Case para buscar informações completas do usuário
  */
 @Injectable()
-export class GetProfileUseCase {
+export class DisableUserUseCase {
   constructor(
     @Inject(UNIT_OF_WORK_TOKEN)
     private readonly unitOfWork: IUnitOfWork,
     private readonly userDomainService: UserDomainService,
-    private readonly authMapper: AuthMapper,
   ) {}
 
-  async execute(id: string): Promise<FullCleanUser> {
+  async execute(id: string): Promise<void> {
     return this.unitOfWork.execute(async () => {
-      const user = await this.userDomainService.getUserById(id);
-      if (!user) {
+      try {
+        return await this.userDomainService.deactivateUser(id);
+      } catch {
         throw new Error('User not found');
       }
-      const mappedUser = this.authMapper.toFullCleanUser(user);
-
-      return mappedUser;
     });
   }
 }

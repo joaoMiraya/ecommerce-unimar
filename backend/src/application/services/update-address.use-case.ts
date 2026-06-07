@@ -4,10 +4,10 @@ import { UNIT_OF_WORK_TOKEN, ADDRESS_REPOSITORY_TOKEN } from '../di/tokens';
 import type { IAddressRepository } from 'src/domain/address/repositories/address.repository';
 import { AddressDomainService } from 'src/domain/address/services/address.service';
 import { AddressEntity } from 'src/domain/address/entities/address.entity';
-import { CreateAddressRequestDto } from '../dtos/address/create-address.dto';
+import { UpdateAddressRequestDto } from '../dtos/address/create-address.dto';
 
 @Injectable()
-export class CreateAddressUseCase {
+export class UpdateAddressUseCase {
   constructor(
     @Inject(UNIT_OF_WORK_TOKEN)
     private readonly unitOfWork: IUnitOfWork,
@@ -16,18 +16,18 @@ export class CreateAddressUseCase {
     private readonly addressDomainService: AddressDomainService,
   ) {}
 
-  async execute(input: CreateAddressRequestDto): Promise<AddressEntity> {
-    const { city, neighborhood, street, number, zipCode, userId } = input;
+  async execute(input: UpdateAddressRequestDto): Promise<AddressEntity> {
+    const { id, city, street, number, neighborhood, zipCode } = input;
 
     return this.unitOfWork.execute(async () => {
-      const address = this.addressDomainService.createAddress(
-        userId,
+      const address = await this.addressDomainService.updateAddressInfo(id, {
         city,
-        neighborhood,
         street,
         number,
+        neighborhood,
         zipCode,
-      );
+      });
+
       return this.addressRepository.save(address);
     });
   }

@@ -9,12 +9,16 @@ import { DatabaseModule } from './infrastruct/database/database.module';
 
 // Modules
 import { AuthModule } from './application/auth.module';
+import { UsersModule } from './application/users.module';
+import { ProductModule } from './application/product.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(AppDataSource.options),
     DatabaseModule,
     AuthModule,
+    UsersModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [],

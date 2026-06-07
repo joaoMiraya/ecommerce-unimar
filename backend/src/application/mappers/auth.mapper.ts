@@ -6,6 +6,7 @@ import {
   RefreshTokenResponseDto,
   UserAuthDto,
 } from '../dtos/auth';
+import { FullCleanUser } from '../dtos/auth/auth-responses.dto';
 
 /**
  * Mapper para converter entidades de autenticação em DTOs
@@ -72,5 +73,21 @@ export class AuthMapper {
    */
   toUserAuthDtoList(users: UserEntity[]): UserAuthDto[] {
     return users.map((user) => this.toUserAuthDto(user));
+  }
+
+  toFullCleanUser(user: UserEntity): FullCleanUser {
+    return {
+      email: user.email,
+      name: user.name,
+      createdAt: user.createdAt,
+      addresses: user.addresses.map((address) => ({
+        id: address.id,
+        city: address.city,
+        street: address.street,
+        number: address.number,
+        neighborhood: address.neighborhood,
+        zipCode: address.zipCode,
+      })),
+    };
   }
 }

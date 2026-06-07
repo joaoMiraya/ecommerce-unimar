@@ -1,18 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { IAddressRepository } from '../repositories/address.repository';
 import { AddressEntity } from '../entities/address.entity';
+import { ADDRESS_REPOSITORY_TOKEN } from '../../../application/di/tokens';
 
 @Injectable()
 export class AddressDomainService {
-  constructor(private readonly addressRepository: IAddressRepository) {}
+  constructor(
+    @Inject(ADDRESS_REPOSITORY_TOKEN)
+    private readonly addressRepository: IAddressRepository,
+  ) {}
 
   createAddress(
+    userId: string,
     city: string,
     neighborhood: string,
     street: string,
     number: string,
     zipCode: string,
   ): AddressEntity {
+    if (!userId || userId.trim().length === 0) {
+      throw new Error('UserId is required');
+    }
     if (!city || city.trim().length === 0) {
       throw new Error('City is required');
     }
@@ -30,6 +38,7 @@ export class AddressDomainService {
     }
 
     const address = new AddressEntity({
+      userId: userId,
       city: city.trim(),
       neighborhood: neighborhood.trim(),
       street: street.trim(),
@@ -46,30 +55,23 @@ export class AddressDomainService {
     return address;
   }
 
-  // async updateUserInfo(
-  //   userId: string,
-  //   name: string,
-  //   email: string,
-  // ): Promise<UserEntity> {
-  //   const user = await this.addressRepository.findById(userId);
+  async updateAddressInfo(
+    id: string,
+    props: Partial<
+      Pick<
+        AddressEntity,
+        'city' | 'street' | 'number' | 'neighborhood' | 'zipCode'
+      >
+    >,
+  ): Promise<AddressEntity> {
+    const address = await this.addressRepository.findById(id);
 
-  //   if (!user) {
-  //     throw new Error(`User with id ${userId} not found`);
-  //   }
+    if (!address) {
+      throw new Error(`Address with id ${id} not found`);
+    }
 
-  //   if (!user.isActive) {
-  //     throw new Error('Cannot update inactive user');
-  //   }
+    address.updateInfo(props);
 
-  //   if (email !== user.email) {
-  //     const emailExists = await this.addressRepository.emailExists(email);
-  //     if (emailExists) {
-  //       throw new Error(`Email ${email} already registered`);
-  //     }
-  //   }
-
-  //   user.updateInfo(name, email);
-
-  //   return user;
-  // }
+    return address;
+  }
 }

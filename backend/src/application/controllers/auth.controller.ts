@@ -151,8 +151,6 @@ export class AuthController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@CurrentUserId() userId: string) {
-    // Este endpoint retorna as informações do usuário autenticado
-    // As informações vêm do JWT, então aqui apenas confirmamos que o usuário está autenticado
     const user = await this.getProfileUseCase.execute(userId);
     return {
       status: HttpStatus.OK,

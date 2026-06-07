@@ -24,9 +24,9 @@ import { OrderRepositoryImpl } from './repositories/order.repository.impl';
 import { UserDomainService } from '../../domain/user/services/user.service';
 import { ProductDomainService } from '../../domain/product/services/product.service';
 import { OrderDomainService } from '../../domain/order/services/order.service';
-import type { IUserRepository } from '../../domain/user/repositories/user.repository';
-import type { IProductRepository } from '../../domain/product/repositories/product.repository';
-import type { IOrderRepository } from '../../domain/order/repositories/order.repository';
+import { IUserRepository } from '../../domain/user/repositories/user.repository';
+import { IProductRepository } from '../../domain/product/repositories/product.repository';
+import { IOrderRepository } from '../../domain/order/repositories/order.repository';
 import { AddressRepositoryImpl } from './repositories/address.repository.impl';
 
 @Module({
