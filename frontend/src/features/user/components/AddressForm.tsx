@@ -1,42 +1,31 @@
 import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 import { useAddressMutation, useCreateAddressMutation } from "../queries/user.query";
-import type { FormDataProps, UserFormData } from "./ProfileForm";
 import { Button } from "../../../components/Button";
+import type { ProfileFormData } from "../schemas/profile.schema";
 
+export const AddressForm = () => {
+  const [loading, setLoading] = useState(false);
+  const [createAddress] = useCreateAddressMutation();
+  const [updateAddress] = useAddressMutation();
+  const { register, handleSubmit, watch, formState: { errors } } = useFormContext<ProfileFormData>();
 
+  const hasAddress = !!watch("address.id");
 
-export const AddressForm = ({ formData, setFormData }: FormDataProps) => {
-    const [loading, setLoading] = useState(false);
-
-    const [createAddress] = useCreateAddressMutation();
-    const [updateAddress] = useAddressMutation();
-
-    const hasAddress = !!formData.address.id;
-    
-    const setField = (field: keyof UserFormData["address"], value: string) =>
-        setFormData((prev) => ({ ...prev, address: { ...prev.address, [field]: value } }));
-
-    const handleUpdateAddress = async () => {
-        setLoading(true);
-        try {
-        await updateAddress(formData.address);
-        } catch {
-        console.error("An error occurred");
-        } finally {
-        setLoading(false);
-        }
-    };
-
-    const handleCreateAddress = async () => {
-        setLoading(true);
-        try {
-        await createAddress(formData.address);
-        } catch {
-        console.error("An error occurred");
-        } finally {
-        setLoading(false);
-        }
-    };
+  const onSubmit = async (data: ProfileFormData) => {
+    setLoading(true);
+    try {
+      if (hasAddress) {
+        await updateAddress(data.address);
+      } else {
+        await createAddress(data.address);
+      }
+    } catch {
+      console.error("An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="border p-2 mt-2 rounded-sm bg-slate-100 flex flex-col">
@@ -46,75 +35,64 @@ export const AddressForm = ({ formData, setFormData }: FormDataProps) => {
         <label className="text-sm text-zinc-900 font-bold" htmlFor="city">Cidade:</label>
         <input
           className="border border-zinc-900 rounded-sm p-1"
-          type="text" name="city"
+          type="text"
           placeholder="Insira sua cidade"
-          value={formData.address.city}
-          onChange={(e) => setField("city", e.target.value)}
+          {...register("address.city")}
         />
+        {errors.address?.city && <span className="text-red-500 text-xs">{errors.address.city.message}</span>}
       </div>
 
       <div className="flex flex-col">
         <label className="text-sm text-zinc-900 font-bold" htmlFor="street">Rua:</label>
         <input
           className="border border-zinc-900 rounded-sm p-1"
-          type="text" name="street"
+          type="text"
           placeholder="Insira sua rua"
-          value={formData.address.street}
-          onChange={(e) => setField("street", e.target.value)}
+          {...register("address.street")}
         />
+        {errors.address?.street && <span className="text-red-500 text-xs">{errors.address.street.message}</span>}
       </div>
 
       <div className="flex flex-col">
         <label className="text-sm text-zinc-900 font-bold" htmlFor="number">Número:</label>
         <input
           className="border border-zinc-900 rounded-sm p-1"
-          type="text" name="number"
+          type="text"
           placeholder="Insira o número"
-          value={formData.address.number}
-          onChange={(e) => setField("number", e.target.value)}
+          {...register("address.number")}
         />
+        {errors.address?.number && <span className="text-red-500 text-xs">{errors.address.number.message}</span>}
       </div>
 
       <div className="flex flex-col">
         <label className="text-sm text-zinc-900 font-bold" htmlFor="neighborhood">Bairro:</label>
         <input
           className="border border-zinc-900 rounded-sm p-1"
-          type="text" name="neighborhood"
+          type="text"
           placeholder="Insira seu bairro"
-          value={formData.address.neighborhood}
-          onChange={(e) => setField("neighborhood", e.target.value)}
+          {...register("address.neighborhood")}
         />
+        {errors.address?.neighborhood && <span className="text-red-500 text-xs">{errors.address.neighborhood.message}</span>}
       </div>
 
       <div className="flex flex-col">
         <label className="text-sm text-zinc-900 font-bold" htmlFor="zipCode">CEP:</label>
         <input
           className="border border-zinc-900 rounded-sm p-1"
-          type="text" name="zipCode"
+          type="text"
           placeholder="Insira seu CEP"
-          value={formData.address.zipCode}
-          onChange={(e) => setField("zipCode", e.target.value)}
+          {...register("address.zipCode")}
         />
+        {errors.address?.zipCode && <span className="text-red-500 text-xs">{errors.address.zipCode.message}</span>}
       </div>
 
-      {!hasAddress &&
-        <Button
-            disabled={loading}
-            onClick={handleCreateAddress}
-            className="bg-[#D1AC2B] p-2 self-end mt-2"
-        >
-            {loading ? "Salvando..." : "Salvar"}
-        </Button>
-      }
-      {hasAddress &&
-        <Button
-            disabled={loading}
-            onClick={handleUpdateAddress}
-            className="bg-[#D1AC2B] p-2 self-end mt-2"
-        >
-            {loading ? "Atualizando..." : "Atualizar"}
-        </Button>
-      }
+      <Button
+        disabled={loading}
+        onClick={handleSubmit(onSubmit)}
+        className="bg-[#D1AC2B] p-2 self-end mt-2"
+      >
+        {loading ? (hasAddress ? "Atualizando..." : "Salvando...") : (hasAddress ? "Atualizar" : "Salvar")}
+      </Button>
     </div>
   );
 };

@@ -1,21 +1,18 @@
 import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 import { useUpdateMutation } from "../queries/user.query";
-import type { FormDataProps, UserFormData } from "./ProfileForm";
 import { Button } from "../../../components/Button";
+import type { ProfileFormData } from "../schemas/profile.schema";
 
-
-
-export const InfoForm = ({ formData, setFormData }: FormDataProps) => {
+export const InfoForm = () => {
   const [loading, setLoading] = useState(false);
   const [updateInfo] = useUpdateMutation();
+  const { register, handleSubmit, formState: { errors } } = useFormContext<ProfileFormData>();
 
-  const setField = (field: keyof UserFormData["user"], value: string) =>
-    setFormData((prev) => ({ ...prev, user: { ...prev.user, [field]: value } }));
-
-  const handleUpdateInfo = async () => {
+  const onSubmit = async (data: ProfileFormData) => {
     setLoading(true);
     try {
-      await updateInfo(formData.user);
+      await updateInfo(data.user);
     } catch {
       console.error("An error occurred");
     } finally {
@@ -32,11 +29,10 @@ export const InfoForm = ({ formData, setFormData }: FormDataProps) => {
         <input
           className="border border-zinc-900 rounded-sm p-1"
           type="text"
-          name="name"
           placeholder="Insira seu nome"
-          value={formData.user.name}
-          onChange={(e) => setField("name", e.target.value)}
+          {...register("user.name")}
         />
+        {errors.user?.name && <span className="text-red-500 text-xs">{errors.user.name.message}</span>}
       </div>
 
       <div className="flex flex-col">
@@ -44,15 +40,14 @@ export const InfoForm = ({ formData, setFormData }: FormDataProps) => {
         <input
           className="border border-zinc-900 rounded-sm p-1"
           type="email"
-          name="email"
-          value={formData.user.email}
-          onChange={(e) => setField("email", e.target.value)}
+          {...register("user.email")}
         />
+        {errors.user?.email && <span className="text-red-500 text-xs">{errors.user.email.message}</span>}
       </div>
 
       <Button
         disabled={loading}
-        onClick={handleUpdateInfo}
+        onClick={handleSubmit(onSubmit)}
         className="bg-[#D1AC2B] p-2 self-end mt-2"
       >
         {loading ? "Salvando..." : "Salvar"}

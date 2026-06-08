@@ -1,48 +1,29 @@
-import { useState, type Dispatch, type SetStateAction } from "react"
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "../types/user.types";
 import { InfoForm } from "./InfoForm";
 import { AddressForm } from "./AddressForm";
+import { profileSchema, type ProfileFormData } from "../schemas/profile.schema";
 
 export interface ProfileFormProps {
   user: User;
 }
 
-export type UserFormData = {
-  address: {
-    id?: string;
-    city?: string;
-    street?: string;
-    number?: string;
-    neighborhood?: string;
-    zipCode?: string;
-  };
-  user: {
-    name: string;
-    email: string;
-  };
-};
-
 export const ProfileForm = ({ user }: ProfileFormProps) => {
-    const [formData, setFormData] = useState<UserFormData>({
-        address: {
-        ...user.addresses?.[0]
-        },
-        user: {
-        name: user.name,
-        email: user.email,
-        },
-    });
+  const methods = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      address: { ...user.addresses?.[0] },
+      user: { name: user.name, email: user.email },
+    },
+  });
 
-
-    return (
-        <form className="mt-4 flex flex-col">
-          <InfoForm setFormData={setFormData} formData={formData} />
-          <AddressForm setFormData={setFormData} formData={formData} />
-        </form>
-    );
-};
-
-export type FormDataProps = {
-  setFormData: Dispatch<SetStateAction<UserFormData>>;
-  formData: UserFormData;
+  return (
+    <FormProvider {...methods}>
+      <form className="mt-4 flex flex-col">
+        <InfoForm />
+        <AddressForm />
+      </form>
+    </FormProvider>
+  );
 };
