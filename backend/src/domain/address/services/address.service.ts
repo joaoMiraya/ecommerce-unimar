@@ -1,12 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
 import type { IAddressRepository } from '../repositories/address.repository';
 import { AddressEntity } from '../entities/address.entity';
-import { ADDRESS_REPOSITORY_TOKEN } from '../../../application/di/tokens';
 
-@Injectable()
 export class AddressDomainService {
   constructor(
-    @Inject(ADDRESS_REPOSITORY_TOKEN)
     private readonly addressRepository: IAddressRepository,
   ) {}
 

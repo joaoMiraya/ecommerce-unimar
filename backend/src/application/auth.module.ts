@@ -30,12 +30,17 @@ import { AUTH_REPOSITORY_TOKEN } from './di/tokens';
 // Infrastructure Modules
 import { DatabaseModule } from '../infrastruct/database/database.module';
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([LoginSessionEntity]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your-secret-key',
+      secret: jwtSecret,
       signOptions: {
         expiresIn: '1h',
       },
@@ -62,6 +67,6 @@ import { DatabaseModule } from '../infrastruct/database/database.module';
     // Guards
     JwtAuthGuard,
   ],
-  exports: [JwtAuthGuard, AuthMapper, AUTH_REPOSITORY_TOKEN, JwtModule],
+  exports: [JwtAuthGuard, AuthMapper, AUTH_REPOSITORY_TOKEN, JwtModule, LogoutUseCase],
 })
 export class AuthModule {}

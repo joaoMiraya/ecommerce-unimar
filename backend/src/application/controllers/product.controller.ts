@@ -13,7 +13,7 @@ import {
   type CreateProductInput,
   CreateProductUseCase,
 } from '../services/create-product.use-case';
-import { CreateProductRequest } from '../schemas/product.schema';
+import { CreateProductRequestDto } from '../dtos/product/create-product.dto';
 import { DeleteProductUseCase } from '../services/delete-product.use-case';
 
 @Controller('products')
@@ -56,7 +56,7 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   async create(
     @CurrentUserId() userId: string,
-    @Body() product: CreateProductRequest,
+    @Body() product: CreateProductRequestDto,
   ) {
     this.logger.warn(product);
     const productDto: CreateProductInput = {

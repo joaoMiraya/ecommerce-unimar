@@ -14,7 +14,7 @@ const AppDataSource = new DataSource({
   ],
   migrations: [path.join(__dirname, '../migrations/*.{ts,js}')],
   subscribers: [path.join(__dirname, '../subscribers/*.{ts,js}')],
-  synchronize: process.env.NODE_ENV !== 'production',
+  synchronize: false,
   logging: process.env.NODE_ENV !== 'production',
   migrationsRun: false,
 });

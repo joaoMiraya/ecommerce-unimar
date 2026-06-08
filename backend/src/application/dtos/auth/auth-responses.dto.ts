@@ -1,19 +1,17 @@
-import { FullAddress } from "../address/create-address.dto";
+import { FullAddress } from '../address/create-address.dto';
 
 /**
  * DTO para resposta de login
- * Contém os tokens e informações do usuário autenticado
  */
 export class LoginResponseDto {
   accessToken: string;
   refreshToken: string;
-  expiresIn: number; // Segundos até expiração do access token
+  expiresIn: number;
   user: UserAuthDto;
 }
 
 /**
  * DTO para resposta de refresh token
- * Contém o novo access token e tempo de expiração
  */
 export class RefreshTokenResponseDto {
   accessToken: string;
@@ -21,8 +19,7 @@ export class RefreshTokenResponseDto {
 }
 
 /**
- * DTO para informações do usuário autenticado
- * Nunca expõe a senha
+ * DTO para informações do usuário autenticado (sem dados sensíveis)
  */
 export class UserAuthDto {
   email: string;
@@ -30,6 +27,9 @@ export class UserAuthDto {
   createdAt: Date;
 }
 
+/**
+ * DTO para perfil completo do usuário com endereços
+ */
 export class FullCleanUser {
   email: string;
   name: string;

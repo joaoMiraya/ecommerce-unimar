@@ -10,12 +10,11 @@ import {
   Res,
   Req,
 } from '@nestjs/common';
-import { RegisterDto, AuthSchema } from '../schemas/auth.schema';
+import { RegisterDto, AuthSchema, LoginRequestDto } from '../dtos/auth';
 import { CreateUserUseCase } from '../services/create-user.use-case';
 import { LoginUseCase } from '../services/login.use-case';
 import { RefreshTokenUseCase } from '../services/refresh-token.use-case';
 import { LogoutUseCase } from '../services/logout.use-case';
-import { LoginRequestDto } from '../dtos/auth/auth-requests.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUserId } from '../decorators/current-user.decorator';
 import { type Request, type Response } from 'express';
@@ -50,9 +49,9 @@ export class AuthController {
       const response = await this.loginUseCase.execute(loginDto);
       res.cookie('refresh_token', response.refreshToken.value, {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        path: '/auth/refresh',
+        path: '/api/auth/refresh',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
       });
 
@@ -80,7 +79,7 @@ export class AuthController {
 
       res.cookie('refresh_token', response.refreshToken.value, {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         path: '/api/auth/refresh',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias

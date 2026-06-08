@@ -122,6 +122,7 @@ describe('AuthRepositoryImpl', () => {
       expect(result).toEqual(session);
       expect(typeormRepository.findOne).toHaveBeenCalledWith({
         where: { refreshTokenValue: refreshToken },
+        relations: { user: true },
       });
     });
   });

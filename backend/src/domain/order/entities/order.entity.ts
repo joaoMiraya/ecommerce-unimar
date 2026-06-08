@@ -1,14 +1,7 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../shared/entities/base.entity';
-import type { ProductEntity } from '../../product/entities/product.entity';
 import type { UserEntity } from '../../user/entities/user.entity';
+import { OrderItemEntity } from './order-item.entity';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -18,25 +11,24 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED',
 }
 
-/**
- * Entidade Order - Agregado de pedido
- * Representa um pedido no sistema e-commerce
- */
 @Entity('orders')
 export class OrderEntity extends BaseEntity {
   @ManyToOne('UserEntity')
   @JoinColumn({ name: 'buyer_id' })
   buyer: UserEntity;
 
-  @ManyToMany('ProductEntity')
-  @JoinTable({
-    name: 'order_products',
-    joinColumn: { name: 'order_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'product_id', referencedColumnName: 'id' },
-  })
-  products: ProductEntity[];
+  @OneToMany(() => OrderItemEntity, (item) => item.order, { cascade: true })
+  items: OrderItemEntity[];
 
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   totalPrice: number;
 
   @Column({
@@ -56,31 +48,30 @@ export class OrderEntity extends BaseEntity {
     }
   }
 
-  /**
-   * Método de domínio: adicionar produto ao pedido
-   */
-  addProduct(product: ProductEntity): void {
-    if (!this.products) {
-      this.products = [];
-    }
-    if (!this.products.find((p) => p.id === product.id)) {
-      this.products.push(product);
+  addItem(productId: string, quantity: number, unitPrice: number): void {
+    if (!this.items) this.items = [];
+    const existing = this.items.find((i) => i.productId === productId);
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      const item = new OrderItemEntity({
+        productId,
+        quantity,
+        unitPrice,
+      });
+      this.items.push(item);
     }
   }
 
-  /**
-   * Método de domínio: remover produto do pedido
-   */
-  removeProduct(productId: string): void {
-    if (!this.products) {
-      this.products = [];
-    }
-    this.products = this.products.filter((p) => p.id !== productId);
+  removeItem(productId: string): void {
+    if (!this.items) return;
+    this.items = this.items.filter((i) => i.productId !== productId);
   }
 
-  /**
-   * Método de domínio: processar pedido
-   */
+  calculateTotal(): number {
+    return (this.items ?? []).reduce((sum, item) => sum + item.subtotal, 0);
+  }
+
   process(): void {
     if (this.status !== OrderStatus.PENDING) {
       throw new Error('Only pending orders can be processed');
@@ -88,9 +79,6 @@ export class OrderEntity extends BaseEntity {
     this.status = OrderStatus.PROCESSING;
   }
 
-  /**
-   * Método de domínio: enviar pedido
-   */
   ship(): void {
     if (this.status !== OrderStatus.PROCESSING) {
       throw new Error('Only processing orders can be shipped');
@@ -98,9 +86,6 @@ export class OrderEntity extends BaseEntity {
     this.status = OrderStatus.SHIPPED;
   }
 
-  /**
-   * Método de domínio: entregar pedido
-   */
   deliver(): void {
     if (this.status !== OrderStatus.SHIPPED) {
       throw new Error('Only shipped orders can be delivered');
@@ -108,9 +93,6 @@ export class OrderEntity extends BaseEntity {
     this.status = OrderStatus.DELIVERED;
   }
 
-  /**
-   * Método de domínio: cancelar pedido
-   */
   cancel(): void {
     if (
       this.status === OrderStatus.SHIPPED ||
@@ -119,16 +101,5 @@ export class OrderEntity extends BaseEntity {
       throw new Error('Cannot cancel shipped or delivered orders');
     }
     this.status = OrderStatus.CANCELLED;
-  }
-
-  /**
-   * Método de domínio: calcular preço total
-   */
-  calculateTotal(): number {
-    const products = this.products ?? [];
-    return products.reduce(
-      (total, product) => total + Number(product.price),
-      0,
-    );
   }
 }

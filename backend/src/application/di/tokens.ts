@@ -1,6 +1,9 @@
-export const ADDRESS_REPOSITORY_TOKEN = Symbol('IAddressRepository');
-export const USER_REPOSITORY_TOKEN = Symbol('IUserRepository');
-export const PRODUCT_REPOSITORY_TOKEN = Symbol('IProductRepository');
-export const ORDER_REPOSITORY_TOKEN = Symbol('IOrderRepository');
-export const AUTH_REPOSITORY_TOKEN = Symbol('IAuthRepository');
-export const UNIT_OF_WORK_TOKEN = Symbol('IUnitOfWork');
+// Re-export from domain layer (canonical location)
+export {
+  ADDRESS_REPOSITORY_TOKEN,
+  USER_REPOSITORY_TOKEN,
+  PRODUCT_REPOSITORY_TOKEN,
+  ORDER_REPOSITORY_TOKEN,
+  AUTH_REPOSITORY_TOKEN,
+  UNIT_OF_WORK_TOKEN,
+} from '../../domain/shared/di/tokens';

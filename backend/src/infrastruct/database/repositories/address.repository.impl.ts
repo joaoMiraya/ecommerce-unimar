@@ -12,12 +12,12 @@ export class AddressRepositoryImpl implements IAddressRepository {
   constructor(private readonly dataSource: DataSource) {}
 
   /**
-   * Buscar usuário por ID
+   * Buscar endereço por userId
    */
-  async findByUserId(id: string): Promise<AddressEntity | null> {
+  async findByUserId(userId: string): Promise<AddressEntity | null> {
     return this.dataSource
       .getRepository(AddressEntity)
-      .findOne({ where: { id } });
+      .findOne({ where: { userId } });
   }
 
   /**

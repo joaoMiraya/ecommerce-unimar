@@ -38,7 +38,7 @@ export class UsersController {
 
   @Delete('')
   @UseGuards(JwtAuthGuard)
-  async getProfile(@CurrentUserId() userId: string) {
+  async deleteAccount(@CurrentUserId() userId: string) {
     await this.logoutUseCase.execute(userId);
     await this.disableUserUseCase.execute(userId);
     return {

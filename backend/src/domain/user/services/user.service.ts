@@ -1,14 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
 import type { IUserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { Email } from 'src/domain/shared/value-objects/email';
 import { Password } from 'src/domain/shared/value-objects/password';
-import { USER_REPOSITORY_TOKEN } from '../../../application/di/tokens';
 
-@Injectable()
 export class UserDomainService {
   constructor(
-    @Inject(USER_REPOSITORY_TOKEN)
     private readonly userRepository: IUserRepository,
   ) {}
 
