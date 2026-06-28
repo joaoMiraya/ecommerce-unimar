@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, FindOptionsWhere } from 'typeorm';
 import type { IProductRepository } from '../../../domain/product/repositories/product.repository';
 import { ProductEntity } from '../../../domain/product/entities/product.entity';
+import { ProductFiltersRequestDto } from 'src/application/dtos/product/product-filters.dto';
 
 /**
  * Implementação de IProductRepository
@@ -96,16 +97,35 @@ export class ProductRepositoryImpl implements IProductRepository {
   /**
    * Buscar com filtro de preço
    */
-  async findByPriceRange(
-    minPrice: number,
-    maxPrice: number,
-  ): Promise<ProductEntity[]> {
-    return this.dataSource
+  async findBy(filters: ProductFiltersRequestDto): Promise<ProductEntity[]> {
+    const qb = this.dataSource
       .getRepository(ProductEntity)
       .createQueryBuilder('product')
-      .where('product.price >= :minPrice', { minPrice })
-      .andWhere('product.price <= :maxPrice', { maxPrice })
       .leftJoinAndSelect('product.seller', 'seller')
-      .getMany();
+      .select(['product', 'seller.name', 'seller.createdAt'])
+      .where('product.stock > 0');
+
+    if (filters.min_price != null) {
+      qb.andWhere('product.price >= :minPrice', {
+        minPrice: filters.min_price,
+      });
+    }
+
+    if (filters.max_price != null) {
+      qb.andWhere('product.price <= :maxPrice', {
+        maxPrice: filters.max_price,
+      });
+    }
+
+    if (filters.name != null && filters.name.trim().length > 0) {
+      qb.andWhere('product.name ILIKE :name', { name: `%${filters.name}%` });
+    }
+
+    if (filters.seller != null && filters.seller.trim().length > 0) {
+      qb.andWhere('seller.name ILIKE :seller', {
+        seller: `%${filters.seller}%`,
+      });
+    }
+    return qb.getMany();
   }
 }

@@ -67,6 +67,12 @@ if (!jwtSecret) {
     // Guards
     JwtAuthGuard,
   ],
-  exports: [JwtAuthGuard, AuthMapper, AUTH_REPOSITORY_TOKEN, JwtModule, LogoutUseCase],
+  exports: [
+    JwtAuthGuard,
+    AuthMapper,
+    AUTH_REPOSITORY_TOKEN,
+    JwtModule,
+    LogoutUseCase,
+  ],
 })
 export class AuthModule {}

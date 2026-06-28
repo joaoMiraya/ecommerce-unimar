@@ -1,11 +1,10 @@
 import type { IProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
 import type { UserEntity } from '../../user/entities/user.entity';
+import { ProductFiltersRequestDto } from 'src/application/dtos/product/product-filters.dto';
 
 export class ProductDomainService {
-  constructor(
-    private readonly productRepository: IProductRepository,
-  ) {}
+  constructor(private readonly productRepository: IProductRepository) {}
 
   createProduct(
     name: string,
@@ -92,11 +91,15 @@ export class ProductDomainService {
     await this.productRepository.save(product);
   }
 
-  async deactivateProduct(productId: string): Promise<void> {
+  async deactivateProduct(productId: string, userId: string): Promise<void> {
     const product = await this.productRepository.findById(productId);
 
     if (!product) {
       throw new Error(`Product with id ${productId} not found`);
+    }
+
+    if (product.seller.id != userId) {
+      throw new Error('Users only can delete your own products');
     }
 
     product.deactivate();
@@ -111,10 +114,7 @@ export class ProductDomainService {
     return this.productRepository.findBySellerId(sellerId);
   }
 
-  async searchByPriceRange(
-    minPrice: number,
-    maxPrice: number,
-  ): Promise<ProductEntity[]> {
-    return this.productRepository.findByPriceRange(minPrice, maxPrice);
+  async searchBy(filters: ProductFiltersRequestDto): Promise<ProductEntity[]> {
+    return this.productRepository.findBy(filters);
   }
 }

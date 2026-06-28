@@ -1,3 +1,4 @@
+import { ProductFiltersRequestDto } from 'src/application/dtos/product/product-filters.dto';
 import { IRepository } from '../../shared/repositories/repository.interface';
 import { ProductEntity } from '../entities/product.entity';
 
@@ -24,8 +25,5 @@ export interface IProductRepository extends IRepository<ProductEntity> {
   /**
    * Buscar com filtro de preço
    */
-  findByPriceRange(
-    minPrice: number,
-    maxPrice: number,
-  ): Promise<ProductEntity[]>;
+  findBy(filters: ProductFiltersRequestDto): Promise<ProductEntity[]>;
 }
