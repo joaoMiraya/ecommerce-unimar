@@ -26,7 +26,7 @@ export class OrderDomainService {
     const order = new OrderEntity({
       buyer,
       items: [],
-      status: OrderStatus.PENDING,
+      status: OrderStatus.PROCESSING,
       shippingAddress: shippingAddress.trim(),
     });
 
