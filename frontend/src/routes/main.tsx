@@ -13,6 +13,8 @@ import { store, persistor } from '../store/store';
 import { setCredentials, setInitialized, logout } from '../features/auth/store/auth_slice';
 import { API_BASE_URL } from '../constants/api';
 import { Products } from '../pages/Products.tsx';
+import { Cart } from '../pages/Cart.tsx';
+import { NotFound } from '../pages/NotFound.tsx';
 
 async function bootstrap() {
   await new Promise<void>((resolve) => {
@@ -46,9 +48,11 @@ async function bootstrap() {
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<App />}>
+              <Route path='*' element={<NotFound />} />
               <Route path='/' element={<Home />} />
               <Route path='/login' element={<Login />} />
               <Route path='/register' element={<Register />} />
+              <Route path='/cart' element={<Cart />} />
               <Route path='/profile' element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path='/products' element={<PrivateRoute><Products /></PrivateRoute>} />
             </Route>

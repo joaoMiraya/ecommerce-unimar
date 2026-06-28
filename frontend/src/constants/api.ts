@@ -14,8 +14,6 @@ export const ENDPOINTS = {
     GET_BY_ID: (id: number) => `/users/${id}`,
   },
   PRODUCTS: {
-    GET_ALL: (page: number, limit: number) => `/products/?page=${page}/limit=${limit}`,
-    GET: "/products/",
     PRODUCT: "/products/",
   },
   ORDERS: {

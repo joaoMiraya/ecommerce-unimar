@@ -4,8 +4,8 @@ import { ProfileComponent } from "../features/user/components/ProfileComponent"
 export const Profile = () => {
 
     return (
-        <>
-        <ProfileComponent />
-        </>
+        <div className="py-4">
+            <ProfileComponent />
+        </div>
     )
 }

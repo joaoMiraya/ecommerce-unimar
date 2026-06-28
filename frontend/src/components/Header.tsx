@@ -1,14 +1,17 @@
 import { Link, useLocation, useNavigate } from "react-router"
 import { Button } from "./Button";
-import { SignOutIcon, UserCircleIcon, XIcon } from "@phosphor-icons/react";
+import { ShoppingCartSimpleIcon, SignOutIcon, UserCircleIcon, XIcon } from "@phosphor-icons/react";
 import { useAuth } from "../features/auth/hooks/useAuth";
 import { useLogoutMutation } from "../features/auth/queries/auth";
 import type { BasicUser } from "../features/user/types/user.types";
 import { useEffect, useRef, useState } from "react";
+import { selectCartCount } from "../features/cart/store/cart.selectors";
+import { useSelector } from "react-redux";
 
 export const Header = () => {
     const [openMenu, setOpenMenu] = useState<boolean>(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const cartCount = useSelector(selectCartCount);
 
     const { pathname } = useLocation();
     const { isAuthenticated, logout, user } = useAuth();
@@ -53,25 +56,35 @@ export const Header = () => {
                     <Link to={'/login'} className="bg-[#D1BC72] p-1 rounded-sm">login</Link>
                 )
         }
-        {isAuthenticated &&
-            <>
-                <div className="flex gap-4 items-center relative">
-                    {openMenu &&
-                        <Button onClick={() => setOpenMenu(false)}>
-                            <XIcon size={32} />
-                        </Button>
-                    }
-                    {!openMenu &&
-                        <Button onClick={() => setOpenMenu(!openMenu)}>
-                            <UserCircleIcon size={32} />
-                        </Button>
-                    }
-                </div>
-                    {openMenu &&
-                        <FloatMenu user={user} handleLogout={handleLogout} menuRef={menuRef} />
-                    }
-            </>
-        }
+        <div className="flex gap-4">
+            <Link to={'/cart'} className="relative">
+                {cartCount > 0 && 
+                <span className="absolute right-0 bottom-7 w-4 h-4 flex items-center justify-center rounded-full bg-red-400 text-white text-sm">
+                    {cartCount}
+                </span>
+                }
+                <ShoppingCartSimpleIcon size={32} />
+            </Link>
+            {isAuthenticated &&
+                <>
+                    <div className="flex gap-4 items-center relative">
+                        {openMenu &&
+                            <Button onClick={() => setOpenMenu(false)}>
+                                <XIcon size={32} />
+                            </Button>
+                        }
+                        {!openMenu &&
+                            <Button onClick={() => setOpenMenu(!openMenu)}>
+                                <UserCircleIcon size={32} />
+                            </Button>
+                        }
+                    </div>
+                        {openMenu &&
+                            <FloatMenu user={user} handleLogout={handleLogout} menuRef={menuRef} />
+                        }
+                </>
+            }
+        </div>
         </header>
     )
 }
@@ -91,10 +104,10 @@ const FloatMenu = (props: FloatMenuProps) => {
             </Link>
                 <span className="text-sm">{user?.name}</span>
             <ul className="flex flex-col w-full my-2 items-center border-t border-gray-600">
-                <Link to={'/'} className="flex w-full justify-center mt-6 text-center bg-gray-300 cursor-pointer hover:bg-gray-400">
+                <Link to={'/'} className="flex w-full py-2 justify-center mt-6 text-center bg-gray-300 cursor-pointer hover:bg-gray-400">
                     Produtos
                 </Link>
-                <Link to={'/products'} className="flex w-full justify-center text-center bg-gray-300 cursor-pointer hover:bg-gray-400">
+                <Link to={'/products'} className="flex w-full py-2 justify-center text-center bg-gray-300 cursor-pointer hover:bg-gray-400">
                     Cadastrar produtos
                 </Link>
                 <li onClick={() => handleLogout()} className="flex justify-center w-full mt-4 underline cursor-pointer">

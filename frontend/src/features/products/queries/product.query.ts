@@ -27,16 +27,17 @@ export const productApi = apiSlice.injectEndpoints({
       }),
       get: builder.query<ProductResponse<Product[]>, void>({
           query: (credentials) => ({
-              url: ENDPOINTS.PRODUCTS.GET,
+              url: ENDPOINTS.PRODUCTS.PRODUCT,
               method: 'GET',
               body: credentials,
           })
       }),
       getAll: builder.query<ProductResponse<Product[]>, ProductRequest>({
-          query: ({ page, limit }) => ({
-              url: ENDPOINTS.PRODUCTS.GET_ALL(page, limit),
-              method: 'GET',
-          }),
+        query: (filters) => ({
+            url: ENDPOINTS.PRODUCTS.PRODUCT,
+            method: 'GET',
+            params: filters,
+        }),
       }),
   }),
   overrideExisting: false,

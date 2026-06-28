@@ -13,7 +13,7 @@ if (!isInitialized) return <>Loading</>;
   return (
     <>
       <Header/>
-      <div className='p-4 min-h-screen'>
+      <div className='px-4 min-h-screen'>
         <Outlet/>
       </div>
       <Footer/>
