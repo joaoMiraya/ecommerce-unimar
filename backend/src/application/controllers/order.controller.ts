@@ -4,35 +4,48 @@ import {
   HttpStatus,
   UseGuards,
   Post,
-  Logger,
+  Get,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUserId } from '../decorators/current-user.decorator';
-import {
-  type CreateOrderType,
-  CreateOrderUseCase,
-  type OrderItemsType,
-} from '../services/create-order.use-case';
+import { CreateOrderUseCase, CreateOrderInput } from '../services/create-order.use-case';
+import { GetOrdersUseCase } from '../services/get-orders.use-case';
+import { CancelOrderUseCase } from '../services/cancel-order.use-case';
+import { CreateOrderRequestDto } from '../dtos/order/create-order.dto';
 
-@Controller('order')
+@Controller('orders')
+@UseGuards(JwtAuthGuard)
 export class OrderController {
-  private logger = new Logger();
-  constructor(private readonly createOrderUseCase: CreateOrderUseCase) {}
+  constructor(
+    private readonly createOrderUseCase: CreateOrderUseCase,
+    private readonly getOrdersUseCase: GetOrdersUseCase,
+    private readonly cancelOrderUseCase: CancelOrderUseCase,
+  ) {}
 
   @Post('')
-  @UseGuards(JwtAuthGuard)
   async create(
     @CurrentUserId() userId: string,
-    @Body() items: OrderItemsType[],
+    @Body() body: CreateOrderRequestDto,
   ) {
-    const input: CreateOrderType = {
-      items: items,
-      buyerId: userId,
-    };
-
+    const input: CreateOrderInput = { ...body, buyerId: userId };
     await this.createOrderUseCase.execute(input);
-    return {
-      status: HttpStatus.ACCEPTED,
-    };
+    return { status: HttpStatus.CREATED };
+  }
+
+  @Get('')
+  async getMyOrders(@CurrentUserId() userId: string) {
+    const orders = await this.getOrdersUseCase.execute(userId);
+    return { status: HttpStatus.OK, data: { orders } };
+  }
+
+  @Patch(':id/cancel')
+  async cancel(
+    @CurrentUserId() userId: string,
+    @Param('id') orderId: string,
+  ) {
+    await this.cancelOrderUseCase.execute(orderId, userId);
+    return { status: HttpStatus.OK };
   }
 }

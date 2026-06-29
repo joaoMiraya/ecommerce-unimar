@@ -20,7 +20,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
   async findById(id: string): Promise<OrderEntity | null> {
     return this.dataSource.getRepository(OrderEntity).findOne({
       where: { id },
-      relations: ['buyer', 'products'],
+      relations: ['buyer', 'items'],
     });
   }
 
@@ -29,7 +29,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
    */
   async findAll(): Promise<OrderEntity[]> {
     return this.dataSource.getRepository(OrderEntity).find({
-      relations: ['buyer', 'products'],
+      relations: ['buyer', 'items'],
     });
   }
 
@@ -61,7 +61,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
 
     return this.dataSource.getRepository(OrderEntity).find({
       where,
-      relations: ['buyer', 'products'],
+      relations: ['buyer', 'items'],
     });
   }
 
@@ -71,7 +71,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
   async findByBuyerId(buyerId: string): Promise<OrderEntity[]> {
     return this.dataSource.getRepository(OrderEntity).find({
       where: { buyer: { id: buyerId } },
-      relations: ['buyer', 'products'],
+      relations: ['buyer', 'items'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -82,7 +82,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
   async findByStatus(status: OrderStatus): Promise<OrderEntity[]> {
     return this.dataSource.getRepository(OrderEntity).find({
       where: { status },
-      relations: ['buyer', 'products'],
+      relations: ['buyer', 'items'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -99,7 +99,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
         buyer: { id: buyerId },
         status,
       },
-      relations: ['buyer', 'products'],
+      relations: ['buyer', 'items'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -116,7 +116,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
       .createQueryBuilder('order')
       .where('order.createdAt >= :date', { date })
       .leftJoinAndSelect('order.buyer', 'buyer')
-      .leftJoinAndSelect('order.products', 'products')
+      .leftJoinAndSelect('order.items', 'items')
       .orderBy('order.createdAt', 'DESC')
       .getMany();
   }
