@@ -7,7 +7,6 @@ type OrderProps = {
     index: number;
 }
 
-// Mapeia cada status para cor de badge — separa a lógica visual do JSX
 const STATUS_STYLES: Record<string, string> = {
     PENDING: 'bg-yellow-100 text-yellow-700 border-yellow-200',
     PROCESSING: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -19,7 +18,8 @@ const STATUS_STYLES: Record<string, string> = {
 export const Order = (props: OrderProps) => {
     const { order, index } = props;
     const [cancelOrder] = useCancelOrderMutation();
-    const isCancelled = order.status === 'CANCELLED'; // troque pelo valor real do seu enum
+    const isCancelled = order.status === 'CANCELLED';
+    const isDelivered = order.status === 'DELIVERED';
 
     const handleCancelOrder = async (orderId: string) => {
         try {
@@ -33,7 +33,7 @@ export const Order = (props: OrderProps) => {
         <div
             key={index}
             className={`bg-white rounded-md shadow-md flex flex-col justify-between border p-2 transition-opacity
-                ${isCancelled ? 'border-gray-100 opacity-60 grayscale-[30%]' : 'border-gray-100'}`}
+                ${isCancelled ? 'border-gray-100 opacity-60 grayscale-30' : 'border-gray-100'}`}
         >
             <div className="flex items-center justify-between">
                 <span
@@ -60,7 +60,7 @@ export const Order = (props: OrderProps) => {
                 ))}
             </div>
 
-            {!isCancelled && (
+            {!isCancelled || isDelivered && (
                 <button
                     className="underline text-red-400 hover:text-red-500 self-end cursor-pointer my-4 text-sm"
                     onClick={() => handleCancelOrder(order.id)}

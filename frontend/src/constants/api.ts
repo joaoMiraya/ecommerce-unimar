@@ -21,6 +21,8 @@ export const ENDPOINTS = {
     CREATE: "/orders",
     CANCEL: "/orders/cancel",
     GET: "/orders",
+    SALES: "/orders/sales",
+    UPDATE_STATUS: "/orders/status",
   },
 };
 

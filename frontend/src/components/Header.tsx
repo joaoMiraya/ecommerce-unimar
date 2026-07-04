@@ -113,6 +113,9 @@ const FloatMenu = (props: FloatMenuProps) => {
                 <Link to={'/orders'} className="flex w-full py-2 justify-center text-center bg-gray-300 cursor-pointer hover:bg-gray-400">
                     Meus pedidos
                 </Link>
+                <Link to={'/sales'} className="flex w-full py-2 justify-center text-center bg-gray-300 cursor-pointer hover:bg-gray-400">
+                    Minhas vendas
+                </Link>
                 <li onClick={() => handleLogout()} className="flex justify-center w-full mt-4 underline cursor-pointer">
                     <SignOutIcon size={24} /> Desconectar
                 </li>

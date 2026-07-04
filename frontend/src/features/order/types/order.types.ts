@@ -9,7 +9,7 @@ export type OrderResponse<T> = {
   status: number;
   data: {
     orders: T,
-    message: string;
+    message?: string;
   }
 }
 
@@ -26,8 +26,17 @@ export type Order = {
   id: string;
   createdAt: string;
   updatedAt: string;
+  buyer?: {
+    id: string;
+    name: string;
+  };
   items: OrderItem[];
   totalPrice: number;
+  status: OrderStatus;
+}
+
+export type UpdateOrderStatusRequest = {
+  orderId: string;
   status: OrderStatus;
 }
 
