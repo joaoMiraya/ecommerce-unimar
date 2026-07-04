@@ -4,14 +4,17 @@ import type { ProductRequest } from "../types/product.types";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { ArrowBendDownLeftIcon, ArrowBendDownRightIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { PriceFilter } from "./PriceFilter";
+import { Pagination } from "../../../components/Pagination";
 
 export const ProductList = () => {
-    const [filters, setFilters] = useState<ProductRequest>({ page: 1, limit: 25 });
+    const [filters, setFilters] = useState<ProductRequest>({ page: 1, limit: 10 });
     const [isFilterOpen, setIsFilterOpen] = useState<boolean>(
         () => window.innerWidth >= 640
     );
 
     const { data, isLoading, isError } = useGetAllQuery(filters);
+    const currentPage = data?.data.products.meta.page ?? filters.page;
+    const totalPages = data?.data.products.meta.totalPages ?? 1;
 
     const handleSearch = (name: string) => setFilters(prev => ({ ...prev, name, page: 1 }));
     const handleSearchBySeller = (seller: string) => setFilters(prev => ({ ...prev, seller, page: 1 }));
@@ -23,6 +26,10 @@ export const ProductList = () => {
             max_price: max_price > 0 ? max_price : undefined,
             page: 1,
         }));
+    };
+    const handlePageChange = (page: number) => {
+        if (page < 1 || page > totalPages || page === currentPage) return;
+        setFilters((prev) => ({ ...prev, page }));
     };
 
     if (isLoading) return <p>Carregando...</p>;
@@ -47,7 +54,7 @@ export const ProductList = () => {
                 setIsOpen={setIsFilterOpen}
             />
 
-            <main className="flex-1 overflow-y-auto p-4">
+            <main className="flex h-[calc(100vh-4rem)] flex-1 flex-col p-4">
                 {!isFilterOpen && (
                     <button
                         onClick={() => setIsFilterOpen(true)}
@@ -59,10 +66,21 @@ export const ProductList = () => {
                 )}
                 {
                     data?.data.products.meta?.total && data?.data.products.meta?.total > 0 ? 
-                    <div className="flex flex-wrap gap-4">
-                        {data?.data.products.data.map((product) => (
-                            <Product key={product.id} product={product} />
-                        ))}
+                    <div className="flex h-full flex-col">
+                        <div className="flex-1 overflow-y-auto">
+                            <div className="flex flex-wrap gap-4 pb-2">
+                                {data?.data.products.data.map((product) => (
+                                    <Product key={product.id} product={product} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mt-3 border-t border-gray-100 pt-3">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
+                        </div>
                     </div>
                     : <p className="text-center">Nenhum produto disponível</p>
                 }

@@ -45,10 +45,10 @@ export const productApi = apiSlice.injectEndpoints({
         providesTags: ['Products'],
       }),
       own: builder.query<ProductResponse<Product[]>, Pagination>({
-          query: (credentials) => ({
+          query: (filters) => ({
               url: ENDPOINTS.PRODUCTS.OWN,
               method: 'GET',
-              body: credentials,
+              params: filters,
           }),
           providesTags: ['Products'],
       }),

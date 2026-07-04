@@ -8,7 +8,7 @@ export const Products = () => {
 
     return (
 
-        <div className="py-4">
+        <div className="py-4 h-full pb-12">
             <CreateProduct />
             <div className="py-4">
                 <OwnProducts />
