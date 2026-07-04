@@ -125,7 +125,7 @@ export class ProductRepositoryImpl implements IProductRepository {
     }
 
     const page = filters.page && filters.page > 0 ? filters.page : 1;
-    const limit = filters.limit && filters.limit > 0 ? filters.limit : 25;
+    const limit = filters.limit && filters.limit > 0 ? filters.limit : 10;
 
     qb.skip((page - 1) * limit).take(limit);
 

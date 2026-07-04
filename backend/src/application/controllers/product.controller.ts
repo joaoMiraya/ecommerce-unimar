@@ -5,7 +5,6 @@ import {
   UseGuards,
   Delete,
   Post,
-  Logger,
   Get,
   Query,
 } from '@nestjs/common';
@@ -22,7 +21,6 @@ import { ProductFiltersRequestDto } from '../dtos/product/product-filters.dto';
 
 @Controller('products')
 export class ProductController {
-  private logger = new Logger();
   constructor(
     private readonly createProductUseCase: CreateProductUseCase,
     private readonly getProductsUseCase: GetProductsUseCase,
@@ -89,11 +87,15 @@ export class ProductController {
 
   @Get('own')
   @UseGuards(JwtAuthGuard)
-  async getUserProducts(@CurrentUserId() userId: string) {
+  async getUserProducts(
+    @CurrentUserId() userId: string,
+    @Query() filters: ProductFiltersRequestDto,
+  ) {
     const filter: ProductFiltersRequestDto = {
+      ...filters,
       sellerId: userId,
     };
-    this.logger.warn(filter);
+
     const products = await this.getProductsUseCase.execute(filter);
 
     return {
