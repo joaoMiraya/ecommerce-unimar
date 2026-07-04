@@ -4,15 +4,27 @@ import type { AppDispatch } from "../store/store";
 import { selectCartItems, selectCartTotal } from "../features/cart/store/cart.selectors";
 import { clearCart, decrementQuantity, incrementQuantity, removeItem } from "../features/cart/store/cart_slice";
 import { Link } from "react-router";
+import { useCreateOrderMutation } from "../features/order/queries/order.query";
+import type { OrderRequest } from "../features/order/types/order.types";
 
 export const Cart = () => {
     const dispatch = useDispatch<AppDispatch>();
     const items = useSelector(selectCartItems);
     const total = useSelector(selectCartTotal);
+    const [createOrder] = useCreateOrderMutation();
 
-    const handleCheckout = () => {
-        // lógica de finalização
-        dispatch(clearCart());
+    const handleCheckout = async () => {
+        const orderPayload: OrderRequest = {
+            items: items.map((item) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+            })),
+        };
+        await createOrder(orderPayload).then(() => {
+            dispatch(clearCart());
+        }).catch((err) => {
+            console.error(err)
+        });
     };
 
     if (items.length === 0) {

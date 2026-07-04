@@ -7,7 +7,9 @@ import { PriceFilter } from "./PriceFilter";
 
 export const ProductList = () => {
     const [filters, setFilters] = useState<ProductRequest>({ page: 1, limit: 25 });
-    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(
+        () => window.innerWidth >= 640
+    );
 
     const { data, isLoading, isError } = useGetAllQuery(filters);
 
@@ -28,8 +30,6 @@ export const ProductList = () => {
 
     return (
         <div className="flex h-screen overflow-hidden">
-
-            {/* Overlay escuro — só em mobile quando o drawer está aberto */}
             {isFilterOpen && (
                 <div
                     className="fixed inset-0 bg-black/40 z-20 sm:hidden"
@@ -48,7 +48,6 @@ export const ProductList = () => {
             />
 
             <main className="flex-1 overflow-y-auto p-4">
-                {/* Botão de abrir filtros — sempre visível em mobile, visível em desktop só quando fechado */}
                 {!isFilterOpen && (
                     <button
                         onClick={() => setIsFilterOpen(true)}
@@ -58,11 +57,15 @@ export const ProductList = () => {
                         <ArrowBendDownRightIcon size={24} />
                     </button>
                 )}
-                <div className="flex flex-wrap gap-4">
-                    {data?.data.products.map((product) => (
-                        <Product key={product.id} product={product} />
-                    ))}
-                </div>
+                {
+                    data?.data.products.meta?.total && data?.data.products.meta?.total > 0 ? 
+                    <div className="flex flex-wrap gap-4">
+                        {data?.data.products.data.map((product) => (
+                            <Product key={product.id} product={product} />
+                        ))}
+                    </div>
+                    : <p className="text-center">Nenhum produto disponível</p>
+                }
             </main>
         </div>
     );

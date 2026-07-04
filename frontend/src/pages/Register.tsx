@@ -15,7 +15,7 @@ export const Register = () => {
     }, [isAuthenticated, navigate])
 
     return (
-        <div className="flex justify-center">
+        <div className="flex justify-center py-4">
             <RegisterForm />
         </div>
     )

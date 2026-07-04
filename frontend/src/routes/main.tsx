@@ -15,6 +15,7 @@ import { API_BASE_URL } from '../constants/api';
 import { Products } from '../pages/Products.tsx';
 import { Cart } from '../pages/Cart.tsx';
 import { NotFound } from '../pages/NotFound.tsx';
+import { Orders } from '../pages/Orders.tsx';
 
 async function bootstrap() {
   await new Promise<void>((resolve) => {
@@ -55,6 +56,7 @@ async function bootstrap() {
               <Route path='/cart' element={<Cart />} />
               <Route path='/profile' element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path='/products' element={<PrivateRoute><Products /></PrivateRoute>} />
+              <Route path='/orders' element={<PrivateRoute><Orders /></PrivateRoute>} />
             </Route>
           </Routes>
         </BrowserRouter>

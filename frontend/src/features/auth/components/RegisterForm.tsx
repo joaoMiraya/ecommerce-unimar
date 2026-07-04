@@ -32,7 +32,7 @@ export const RegisterForm = () => {
   };
 
   return (
-    <form className="flex flex-col gap-2 bg-amber-50 p-4 rounded-md min-w-1/2" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-2 bg-gray-100 p-4 rounded-md min-w-1/2" onSubmit={handleSubmit(onSubmit)}>
       <h2 className="text-xl font-bold text-zinc-950 text-center">Crie sua conta</h2>
       <div className="flex flex-col">
         <label className="text-sm text-zinc-900 font-bold" htmlFor="name">Nome:</label>

@@ -15,8 +15,16 @@ export const ENDPOINTS = {
   },
   PRODUCTS: {
     PRODUCT: "/products/",
+    OWN: "/products/own",
   },
   ORDERS: {
-    GET_ALL: (page: number, limit: number) => `/orders/?page=${page}/limit=${limit}`,
+    CREATE: "/orders",
+    CANCEL: "/orders/cancel",
+    GET: "/orders",
   },
+};
+
+export type Pagination = {
+  page: number;
+  limit: number;
 };

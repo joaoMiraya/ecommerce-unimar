@@ -1,4 +1,9 @@
-
+export type CreateProductType = {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+}
 export interface Product {
   id: string;
   name: string;
@@ -17,7 +22,15 @@ export interface Product {
 export type ProductResponse<T> = {
   status: number;
   data: {
-    products: T,
+    products: {
+      data: T,
+      meta: {
+        page: number,
+        limit: number;
+        total: number;
+        totalPages: number;
+      }
+    },
     message: string;
   }
 }

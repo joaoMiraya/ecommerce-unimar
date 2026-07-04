@@ -25,7 +25,7 @@ export const CreateProduct = () => {
             name: "",
             description: "",
             price: 0,
-            stock: 0,
+            stock: undefined,
         },
     });
 
@@ -44,7 +44,7 @@ export const CreateProduct = () => {
     return (
         <div>
             <h2 className="text-2xl">
-                Adicione seus produtos
+                Cadastre novos produtos
             </h2>
 
             <form
