@@ -23,7 +23,7 @@ describe('AuthRepositoryImpl', () => {
       accessToken: 'mock-access-token',
       refreshToken,
       issuedAt: now,
-      expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+      accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
     });
 
     if (overrides) {

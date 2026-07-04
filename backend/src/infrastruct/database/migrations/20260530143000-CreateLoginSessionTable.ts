@@ -6,19 +6,22 @@ export class CreateLoginSessionTable20260530143000 implements MigrationInterface
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE "login_sessions" (
-        "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        "userId" uuid NOT NULL,
-        "accessToken" varchar NOT NULL,
-        "accessTokenExpiresAt" timestamp NOT NULL,
-        "refreshTokenValue" varchar NOT NULL,
+        "id"                    uuid      PRIMARY KEY DEFAULT uuid_generate_v4(),
+        "userId"                uuid      NOT NULL,
+        "accessToken"           varchar   NOT NULL,
+        "issuedAt"              timestamp NOT NULL,
+        "accessTokenExpiresAt"  timestamp NOT NULL,
+        "refreshTokenValue"     text      NOT NULL,
         "refreshTokenExpiresAt" timestamp NOT NULL,
         "refreshTokenCreatedAt" timestamp NOT NULL,
-        "ipAddress" varchar,
-        "userAgent" varchar,
-        "isActive" boolean NOT NULL DEFAULT true,
-        "createdAt" timestamp NOT NULL DEFAULT now(),
-        "updatedAt" timestamp NOT NULL DEFAULT now(),
-        CONSTRAINT "FK_login_sessions_user" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE
+        "lastUsedAt"            timestamp,
+        "ipAddress"             varchar(15),
+        "userAgent"             varchar(500),
+        "isActive"              boolean   NOT NULL DEFAULT true,
+        "createdAt"             timestamp NOT NULL DEFAULT now(),
+        "updatedAt"             timestamp NOT NULL DEFAULT now(),
+        CONSTRAINT "FK_login_sessions_user"
+          FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE
       )`,
     );
 

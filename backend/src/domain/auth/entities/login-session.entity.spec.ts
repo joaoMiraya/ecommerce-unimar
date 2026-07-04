@@ -16,7 +16,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt,
+        accessTokenExpiresAt: expiresAt,
       });
 
       expect(session).toBeInstanceOf(LoginSessionEntity);
@@ -35,7 +35,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
         ipAddress: '192.168.1.1',
         userAgent: 'Mozilla/5.0...',
       });
@@ -56,7 +56,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt,
+        accessTokenExpiresAt: expiresAt,
       });
 
       expect(session.isExpired()).toBe(false);
@@ -72,7 +72,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: new Date(now.getTime() - 20 * 60 * 1000),
-        expiresAt: pastExpiresAt,
+        accessTokenExpiresAt: pastExpiresAt,
       });
 
       expect(session.isExpired()).toBe(true);
@@ -89,7 +89,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       expect(session.isTokenValid()).toBe(true);
@@ -104,7 +104,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       session.revoke();
@@ -120,7 +120,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: new Date(now.getTime() - 20 * 60 * 1000),
-        expiresAt: new Date(now.getTime() - 1000),
+        accessTokenExpiresAt: new Date(now.getTime() - 1000),
       });
 
       expect(session.isTokenValid()).toBe(false);
@@ -137,7 +137,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       expect(session.isRefreshTokenValid()).toBe(true);
@@ -152,7 +152,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       session.revoke();
@@ -170,7 +170,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       expect(session.lastUsedAt).toBeNull();
@@ -188,7 +188,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       session.revoke();
@@ -208,7 +208,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       const newToken = 'new-access-token-xyz';
@@ -217,7 +217,7 @@ describe('LoginSessionEntity', () => {
       session.renewAccessToken(newToken, newExpiresAt);
 
       expect(session.accessToken).toBe(newToken);
-      expect(session.expiresAt).toEqual(newExpiresAt);
+      expect(session.accessTokenExpiresAt).toEqual(newExpiresAt);
       expect(session.lastUsedAt).not.toBeNull();
     });
 
@@ -230,7 +230,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       session.revoke();
@@ -253,7 +253,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       const oldTokenValue = session.refreshTokenValue;
@@ -275,7 +275,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       session.revoke();
@@ -296,7 +296,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       expect(session.isActive).toBe(true);
@@ -315,7 +315,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       session.revoke();
@@ -336,7 +336,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       const timeRemaining = session.getAccessTokenTimeRemainingInSeconds();
@@ -353,7 +353,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: new Date(now.getTime() - 20 * 60 * 1000),
-        expiresAt: new Date(now.getTime() - 1000),
+        accessTokenExpiresAt: new Date(now.getTime() - 1000),
       });
 
       expect(session.getAccessTokenTimeRemainingInSeconds()).toBeLessThan(0);
@@ -370,7 +370,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       expect(session.isRecent()).toBe(true);
@@ -386,7 +386,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: oldIssuedAt,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       expect(session.isRecent()).toBe(false);
@@ -403,7 +403,7 @@ describe('LoginSessionEntity', () => {
         accessToken: mockAccessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt: new Date(now.getTime() + 15 * 60 * 1000),
+        accessTokenExpiresAt: new Date(now.getTime() + 15 * 60 * 1000),
       });
 
       // Simular um outro objeto com o mesmo ID

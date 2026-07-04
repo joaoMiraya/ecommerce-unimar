@@ -83,7 +83,7 @@ export class LoginUseCase {
         accessToken,
         refreshToken,
         issuedAt: now,
-        expiresAt,
+        accessTokenExpiresAt: expiresAt,
         ipAddress: input.ipAddress,
         userAgent: input.userAgent,
       });

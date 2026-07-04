@@ -35,7 +35,7 @@ export class LoginSessionEntity extends BaseEntity {
   issuedAt: Date;
 
   @Column({ type: 'timestamp' })
-  expiresAt: Date;
+  accessTokenExpiresAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })
   lastUsedAt: Date | null;
@@ -66,7 +66,7 @@ export class LoginSessionEntity extends BaseEntity {
     accessToken: string;
     refreshToken: RefreshToken;
     issuedAt: Date;
-    expiresAt: Date;
+    accessTokenExpiresAt: Date;
     ipAddress?: string;
     userAgent?: string;
   }): LoginSessionEntity {
@@ -77,7 +77,7 @@ export class LoginSessionEntity extends BaseEntity {
     session.refreshTokenExpiresAt = props.refreshToken.expiresAt;
     session.refreshTokenCreatedAt = props.refreshToken.createdAt;
     session.issuedAt = props.issuedAt;
-    session.expiresAt = props.expiresAt;
+    session.accessTokenExpiresAt = props.accessTokenExpiresAt;
     session.lastUsedAt = null;
     session.ipAddress = props.ipAddress || null;
     session.userAgent = props.userAgent || null;
@@ -105,7 +105,7 @@ export class LoginSessionEntity extends BaseEntity {
    * Verifica se a sessão (access token) expirou
    */
   isExpired(): boolean {
-    return new Date() > this.expiresAt;
+    return new Date() > this.accessTokenExpiresAt;
   }
 
   /**
@@ -157,7 +157,7 @@ export class LoginSessionEntity extends BaseEntity {
     }
 
     this.accessToken = newAccessToken;
-    this.expiresAt = newExpiresAt;
+    this.accessTokenExpiresAt = newExpiresAt;
     this.lastUsedAt = new Date();
   }
 
@@ -204,7 +204,7 @@ export class LoginSessionEntity extends BaseEntity {
    */
   getAccessTokenTimeRemainingInSeconds(): number {
     const now = new Date();
-    return Math.floor((this.expiresAt.getTime() - now.getTime()) / 1000);
+    return Math.floor((this.accessTokenExpiresAt.getTime() - now.getTime()) / 1000);
   }
 
   /**
