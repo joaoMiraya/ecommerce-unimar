@@ -105,6 +105,39 @@ export class OrderDomainService {
     return this.orderRepository.findByBuyerId(buyerId);
   }
 
+  async getSellerOrders(sellerId: string): Promise<OrderEntity[]> {
+    return this.orderRepository.findBySellerId(sellerId);
+  }
+
+  async updateOrderStatus(
+    orderId: string,
+    status: OrderStatus,
+  ): Promise<OrderEntity> {
+    const order = await this.orderRepository.findById(orderId);
+    if (!order) throw new Error(`Order with id ${orderId} not found`);
+
+    switch (status) {
+      case OrderStatus.PENDING:
+        throw new Error('Cannot update order to pending');
+      case OrderStatus.PROCESSING:
+        order.process();
+        break;
+      case OrderStatus.SHIPPED:
+        order.ship();
+        break;
+      case OrderStatus.DELIVERED:
+        order.deliver();
+        break;
+      case OrderStatus.CANCELLED:
+        order.cancel();
+        break;
+      default:
+        throw new Error('Invalid order status');
+    }
+
+    return order;
+  }
+
   async getOrdersByStatus(status: OrderStatus): Promise<OrderEntity[]> {
     return this.orderRepository.findByStatus(status);
   }

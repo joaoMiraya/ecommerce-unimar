@@ -15,10 +15,13 @@ import {
 } from '../services/create-order.use-case';
 import { GetOrdersUseCase } from '../services/get-orders.use-case';
 import { CancelOrderUseCase } from '../services/cancel-order.use-case';
+import { GetSellerOrdersUseCase } from '../services/get-seller-orders.use-case';
+import { UpdateOrderStatusUseCase } from '../services/update-order-status.use-case';
 import {
   CancelOrderDto,
   CreateOrderRequestDto,
 } from '../dtos/order/create-order.dto';
+import { UpdateOrderStatusDto } from '../dtos/order/update-order-status.dto';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
@@ -28,6 +31,8 @@ export class OrderController {
     private readonly createOrderUseCase: CreateOrderUseCase,
     private readonly getOrdersUseCase: GetOrdersUseCase,
     private readonly cancelOrderUseCase: CancelOrderUseCase,
+    private readonly getSellerOrdersUseCase: GetSellerOrdersUseCase,
+    private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
   ) {}
 
   @Post('')
@@ -46,12 +51,27 @@ export class OrderController {
     return { status: HttpStatus.OK, data: { orders } };
   }
 
+  @Get('sales')
+  async getMySales(@CurrentUserId() userId: string) {
+    const orders = await this.getSellerOrdersUseCase.execute(userId);
+    return { status: HttpStatus.OK, data: { orders } };
+  }
+
   @Post('cancel')
   async cancel(
     @CurrentUserId() userId: string,
     @Body() { orderId }: CancelOrderDto,
   ) {
     await this.cancelOrderUseCase.execute(orderId, userId);
+    return { status: HttpStatus.OK };
+  }
+
+  @Post('status')
+  async updateStatus(
+    @CurrentUserId() userId: string,
+    @Body() body: UpdateOrderStatusDto,
+  ) {
+    await this.updateOrderStatusUseCase.execute(body, userId);
     return { status: HttpStatus.OK };
   }
 }

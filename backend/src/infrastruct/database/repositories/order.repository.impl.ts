@@ -20,7 +20,7 @@ export class OrderRepositoryImpl implements IOrderRepository {
   async findById(id: string): Promise<OrderEntity | null> {
     return this.dataSource.getRepository(OrderEntity).findOne({
       where: { id },
-      relations: ['buyer', 'items'],
+      relations: ['buyer', 'items', 'items.product', 'items.product.seller'],
     });
   }
 
@@ -90,6 +90,21 @@ export class OrderRepositoryImpl implements IOrderRepository {
       },
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async findBySellerId(sellerId: string): Promise<OrderEntity[]> {
+    return this.dataSource
+      .getRepository(OrderEntity)
+      .createQueryBuilder('order')
+      .innerJoin('order.items', 'itemFilter')
+      .innerJoin('itemFilter.product', 'productFilter')
+      .innerJoin('productFilter.seller', 'sellerFilter')
+      .leftJoinAndSelect('order.buyer', 'buyer')
+      .leftJoinAndSelect('order.items', 'items')
+      .leftJoinAndSelect('items.product', 'product')
+      .where('sellerFilter.id = :sellerId', { sellerId })
+      .orderBy('order.createdAt', 'DESC')
+      .getMany();
   }
 
   /**

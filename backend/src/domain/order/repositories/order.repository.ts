@@ -12,6 +12,11 @@ export interface IOrderRepository extends IRepository<OrderEntity> {
   findByBuyerId(buyerId: string): Promise<OrderEntity[]>;
 
   /**
+   * Buscar pedidos onde o usuário é vendedor de algum item
+   */
+  findBySellerId(sellerId: string): Promise<OrderEntity[]>;
+
+  /**
    * Buscar pedidos por status
    */
   findByStatus(status: OrderStatus): Promise<OrderEntity[]>;
