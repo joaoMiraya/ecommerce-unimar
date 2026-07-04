@@ -77,8 +77,24 @@ export class ProductController {
 
   @Get('')
   async getAll(@Query() filters: ProductFiltersRequestDto) {
-    this.logger.warn(filters);
     const products = await this.getProductsUseCase.execute(filters);
+
+    return {
+      status: HttpStatus.ACCEPTED,
+      data: {
+        products,
+      },
+    };
+  }
+
+  @Get('own')
+  @UseGuards(JwtAuthGuard)
+  async getUserProducts(@CurrentUserId() userId: string) {
+    const filter: ProductFiltersRequestDto = {
+      sellerId: userId,
+    };
+    this.logger.warn(filter);
+    const products = await this.getProductsUseCase.execute(filter);
 
     return {
       status: HttpStatus.ACCEPTED,

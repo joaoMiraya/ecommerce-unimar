@@ -10,6 +10,10 @@ export class ProductFiltersRequestDto {
   @IsOptional()
   seller?: string;
 
+  @IsString({ message: 'ID do vendedor deve ser uma string' })
+  @IsOptional()
+  sellerId?: string;
+
   @Type(() => Number)
   @IsNumber({}, { message: 'Preço deve ser um número' })
   @Min(0.01, { message: 'Preço deve ser maior que zero' })

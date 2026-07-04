@@ -68,10 +68,26 @@ export class OrderRepositoryImpl implements IOrderRepository {
   /**
    * Buscar pedidos de um comprador
    */
+
   async findByBuyerId(buyerId: string): Promise<OrderEntity[]> {
     return this.dataSource.getRepository(OrderEntity).find({
       where: { buyer: { id: buyerId } },
-      relations: ['buyer', 'items'],
+      relations: ['items', 'items.product'],
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+        totalPrice: true,
+        items: {
+          id: true,
+          quantity: true,
+          unitPrice: true,
+          product: {
+            name: true,
+          },
+        },
+      },
       order: { createdAt: 'DESC' },
     });
   }

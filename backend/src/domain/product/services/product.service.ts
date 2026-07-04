@@ -2,6 +2,7 @@ import type { IProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
 import type { UserEntity } from '../../user/entities/user.entity';
 import { ProductFiltersRequestDto } from 'src/application/dtos/product/product-filters.dto';
+import { PaginatedResult } from 'src/application/dtos/paginated-result.dto';
 
 export class ProductDomainService {
   constructor(private readonly productRepository: IProductRepository) {}
@@ -114,7 +115,9 @@ export class ProductDomainService {
     return this.productRepository.findBySellerId(sellerId);
   }
 
-  async searchBy(filters: ProductFiltersRequestDto): Promise<ProductEntity[]> {
+  async searchBy(
+    filters: ProductFiltersRequestDto,
+  ): Promise<PaginatedResult<ProductEntity>> {
     return this.productRepository.findBy(filters);
   }
 }

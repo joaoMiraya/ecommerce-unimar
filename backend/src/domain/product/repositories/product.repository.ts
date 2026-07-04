@@ -1,6 +1,7 @@
 import { ProductFiltersRequestDto } from 'src/application/dtos/product/product-filters.dto';
 import { IRepository } from '../../shared/repositories/repository.interface';
 import { ProductEntity } from '../entities/product.entity';
+import { PaginatedResult } from 'src/application/dtos/paginated-result.dto';
 
 /**
  * Interface do Repositório de Product
@@ -18,12 +19,9 @@ export interface IProductRepository extends IRepository<ProductEntity> {
   findBySellerId(sellerId: string): Promise<ProductEntity[]>;
 
   /**
-   * Buscar por nome com busca parcial
-   */
-  findByName(name: string): Promise<ProductEntity[]>;
-
-  /**
    * Buscar com filtro de preço
    */
-  findBy(filters: ProductFiltersRequestDto): Promise<ProductEntity[]>;
+  findBy(
+    filters: ProductFiltersRequestDto,
+  ): Promise<PaginatedResult<ProductEntity>>;
 }

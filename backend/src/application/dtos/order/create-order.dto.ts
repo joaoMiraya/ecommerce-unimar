@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsInt,
-  IsString,
   IsUUID,
   Min,
   ValidateNested,
@@ -22,7 +21,8 @@ export class CreateOrderRequestDto {
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
   items: OrderItemDto[];
-
-  @IsString()
-  shippingAddress: string;
+}
+export class CancelOrderDto {
+  @IsUUID()
+  orderId: string;
 }

@@ -3,10 +3,10 @@ import { BaseEntity } from '../../shared/entities/base.entity';
 
 @Entity('order_products')
 export class OrderItemEntity extends BaseEntity {
-  @Column()
+  @Column({ name: 'order_id' })
   orderId: string;
 
-  @Column()
+  @Column({ name: 'product_id' })
   productId: string;
 
   @Column({ type: 'int' })
@@ -24,11 +24,11 @@ export class OrderItemEntity extends BaseEntity {
   unitPrice: number;
 
   @ManyToOne('OrderEntity', 'items', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'orderId' })
+  @JoinColumn({ name: 'order_id' })
   order: unknown;
 
   @ManyToOne('ProductEntity')
-  @JoinColumn({ name: 'productId' })
+  @JoinColumn({ name: 'product_id' })
   product: unknown;
 
   constructor(props?: Partial<OrderItemEntity>) {

@@ -11,6 +11,7 @@ import { DatabaseModule } from './infrastruct/database/database.module';
 import { AuthModule } from './application/auth.module';
 import { UsersModule } from './application/users.module';
 import { ProductModule } from './application/product.module';
+import { OrderModule } from './application/order.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProductModule } from './application/product.module';
     AuthModule,
     UsersModule,
     ProductModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [],

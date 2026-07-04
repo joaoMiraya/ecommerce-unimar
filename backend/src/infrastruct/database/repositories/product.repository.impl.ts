@@ -3,6 +3,7 @@ import { DataSource, FindOptionsWhere } from 'typeorm';
 import type { IProductRepository } from '../../../domain/product/repositories/product.repository';
 import { ProductEntity } from '../../../domain/product/entities/product.entity';
 import { ProductFiltersRequestDto } from 'src/application/dtos/product/product-filters.dto';
+import { PaginatedResult } from 'src/application/dtos/paginated-result.dto';
 
 /**
  * Implementação de IProductRepository
@@ -83,21 +84,11 @@ export class ProductRepositoryImpl implements IProductRepository {
   }
 
   /**
-   * Buscar por nome com busca parcial
+   * Buscar com base em filtros específicos
    */
-  async findByName(name: string): Promise<ProductEntity[]> {
-    return this.dataSource
-      .getRepository(ProductEntity)
-      .createQueryBuilder('product')
-      .where('product.name ILIKE :name', { name: `%${name}%` })
-      .leftJoinAndSelect('product.seller', 'seller')
-      .getMany();
-  }
-
-  /**
-   * Buscar com filtro de preço
-   */
-  async findBy(filters: ProductFiltersRequestDto): Promise<ProductEntity[]> {
+  async findBy(
+    filters: ProductFiltersRequestDto,
+  ): Promise<PaginatedResult<ProductEntity>> {
     const qb = this.dataSource
       .getRepository(ProductEntity)
       .createQueryBuilder('product')
@@ -126,6 +117,28 @@ export class ProductRepositoryImpl implements IProductRepository {
         seller: `%${filters.seller}%`,
       });
     }
-    return qb.getMany();
+
+    if (filters.sellerId != null) {
+      qb.andWhere('seller.id = :sellerId', {
+        sellerId: filters.sellerId,
+      });
+    }
+
+    const page = filters.page && filters.page > 0 ? filters.page : 1;
+    const limit = filters.limit && filters.limit > 0 ? filters.limit : 25;
+
+    qb.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await qb.getManyAndCount();
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }

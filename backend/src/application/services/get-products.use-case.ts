@@ -4,6 +4,7 @@ import { UNIT_OF_WORK_TOKEN } from '../di/tokens';
 import { ProductDomainService } from 'src/domain/product/services/product.service';
 import { ProductEntity } from 'src/domain/product/entities/product.entity';
 import { ProductFiltersRequestDto } from '../dtos/product/product-filters.dto';
+import { PaginatedResult } from '../dtos/paginated-result.dto';
 
 @Injectable()
 export class GetProductsUseCase {
@@ -13,7 +14,9 @@ export class GetProductsUseCase {
     private readonly productDomainService: ProductDomainService,
   ) {}
 
-  async execute(filters: ProductFiltersRequestDto): Promise<ProductEntity[]> {
+  async execute(
+    filters: ProductFiltersRequestDto,
+  ): Promise<PaginatedResult<ProductEntity>> {
     return this.unitOfWork.execute(async () => {
       const products = await this.productDomainService.searchBy(filters);
       return products;

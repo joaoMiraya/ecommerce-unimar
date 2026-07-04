@@ -34,16 +34,24 @@ export class CreateOrderUseCase {
         throw new Error('Buyer not found');
       }
 
+      const quantityByProductId = new Map<string, number>();
+      for (const item of input.items) {
+        quantityByProductId.set(
+          item.productId,
+          (quantityByProductId.get(item.productId) ?? 0) + item.quantity,
+        );
+      }
+
       const products = await Promise.all(
-        input.items.map((item) =>
-          this.productRepository.findById(item.productId),
+        [...quantityByProductId.keys()].map((productId) =>
+          this.productRepository.findById(productId),
         ),
       );
 
       const items = products
-        .map((product, index) => ({
+        .map((product) => ({
           product,
-          quantity: input.items[index].quantity,
+          quantity: product ? (quantityByProductId.get(product.id) ?? 0) : 0,
         }))
         .filter(
           (item): item is { product: ProductEntity; quantity: number } =>
@@ -54,13 +62,20 @@ export class CreateOrderUseCase {
         throw new Error('No valid products found');
       }
 
+      for (const item of items) {
+        item.product.decreaseStock(item.quantity);
+      }
+
       const order = this.orderDomainService.createOrder(
         buyer,
         items,
-        input.shippingAddress,
+        buyer.addresses[0].id,
       );
 
       await this.orderRepository.save(order);
+      await Promise.all(
+        items.map((item) => this.productRepository.save(item.product)),
+      );
     });
   }
 }
