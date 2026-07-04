@@ -1,73 +1,38 @@
-# React + TypeScript + Vite
+# Frontend - Rotas e páginas
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este frontend usa **React + React Router** com rotas públicas e privadas.  
+As rotas privadas são protegidas por `PrivateRoute` (`src/routes/route.private.tsx`) e redirecionam para `/login` quando o usuário não está autenticado.
 
-Currently, two official plugins are available:
+## Mapa de rotas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Rota | Página/Componente | Acesso | Descrição |
+| --- | --- | --- | --- |
+| `/` | `Home` (`src/pages/Home.tsx`) | Público | Lista de produtos com filtros e paginação (`ProductList`). |
+| `/login` | `Login` (`src/pages/Login.tsx`) | Público | Tela de autenticação com `LoginForm`. |
+| `/register` | `Register` (`src/pages/Register.tsx`) | Público | Tela de cadastro com `RegisterForm`. |
+| `/cart` | `Cart` (`src/pages/Cart.tsx`) | Público | Carrinho de compras e finalização de pedido. |
+| `/profile` | `Profile` (`src/pages/Profile.tsx`) | Privado | Perfil do usuário (`ProfileComponent`). |
+| `/products` | `Products` (`src/pages/Products.tsx`) | Privado | Gestão de produtos próprios (criação + listagem paginada). |
+| `/orders` | `Orders` (`src/pages/Orders.tsx`) | Privado | Lista de pedidos do usuário comprador. |
+| `/sales` | `Sales` (`src/pages/Sales.tsx`) | Privado | Lista de vendas do vendedor e atualização de status. |
+| `*` | `NotFound` (`src/pages/NotFound.tsx`) | Público | Fallback para rotas inexistentes. |
 
-## React Compiler
+## Páginas existentes no projeto
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+As páginas em `src/pages` atualmente são:
 
-## Expanding the ESLint configuration
+- `Home.tsx`
+- `Login.tsx`
+- `Register.tsx`
+- `Cart.tsx`
+- `Profile.tsx`
+- `Products.tsx`
+- `Orders.tsx`
+- `Sales.tsx`
+- `NotFound.tsx`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Observações de navegação/autenticação
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- O bootstrap das rotas está em `src/routes/main.tsx`.
+- Ao iniciar o app, o frontend tenta `POST /auth/refresh` para restaurar sessão.
+- Se a sessão não for restaurada, o usuário é deslogado e as rotas privadas exigem login.
