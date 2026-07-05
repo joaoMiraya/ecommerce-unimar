@@ -17,6 +17,9 @@ export class OrderItemDto {
 }
 
 export class CreateOrderRequestDto {
+  @IsUUID()
+  addressId: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)

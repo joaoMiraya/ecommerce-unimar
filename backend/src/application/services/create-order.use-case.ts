@@ -62,6 +62,13 @@ export class CreateOrderUseCase {
         throw new Error('No valid products found');
       }
 
+      const addressBelongsToBuyer = buyer.addresses?.some(
+        (addr) => addr.id === input.addressId,
+      );
+      if (!addressBelongsToBuyer) {
+        throw new Error('Address not found for this user');
+      }
+
       for (const item of items) {
         item.product.decreaseStock(item.quantity);
       }
@@ -69,7 +76,7 @@ export class CreateOrderUseCase {
       const order = this.orderDomainService.createOrder(
         buyer,
         items,
-        buyer.addresses[0].id,
+        input.addressId,
       );
 
       await this.orderRepository.save(order);
