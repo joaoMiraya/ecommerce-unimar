@@ -20,7 +20,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:migrate": "typeorm-ts-node-commonjs migration:run -d src/infrastruct/database/config/data-source.ts",
     "db:migrate:revert": "typeorm-ts-node-commonjs migration:revert -d src/infrastruct/database/config/data-source.ts",
-    "db:migrate:create": "typeorm-ts-node-commonjs migration:create"
+    "db:migrate:create": "typeorm-ts-node-commonjs migration:create",
+    "db:migrate:docker": "typeorm migration:run -d dist/infrastruct/database/config/data-source.js",
+    "db:migrate:revert:docker": "typeorm migration:revert -d dist/infrastruct/database/config/data-source.js"
 
   },
   "dependencies": {

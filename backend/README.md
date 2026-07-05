@@ -19,6 +19,16 @@ npm run db:migrate
 npm run start:dev
 ```
 
+### Migrações em container Docker
+
+No container de produção do backend, `ts-node` não é instalado (somente dependências de produção).  
+Por isso, use os scripts baseados em `dist`:
+
+```bash
+npm run db:migrate:docker
+npm run db:migrate:revert:docker
+```
+
 Servidor padrão: `http://localhost:8000`  
 Prefixo global da API: `/api`
 
@@ -134,4 +144,6 @@ npm run test:e2e
 npm run db:migrate
 npm run db:migrate:revert
 npm run db:migrate:create -- <nome-da-migration>
+npm run db:migrate:docker
+npm run db:migrate:revert:docker
 ```
