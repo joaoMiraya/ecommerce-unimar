@@ -1,4 +1,5 @@
 export type OrderRequest = {
+  addressId: string;
   items: {
     productId: string;
     quantity: number;

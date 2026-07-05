@@ -60,7 +60,7 @@ export const Order = (props: OrderProps) => {
                 ))}
             </div>
 
-            {!isCancelled || isDelivered && (
+            {!isCancelled && !isDelivered && (
                 <button
                     className="underline text-red-400 hover:text-red-500 self-end cursor-pointer my-4 text-sm"
                     onClick={() => handleCancelOrder(order.id)}

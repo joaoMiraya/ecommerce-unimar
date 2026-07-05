@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ShoppingCartIcon, TrashIcon, PlusIcon, MinusIcon, ArrowLeftIcon } from "@phosphor-icons/react";
 import type { AppDispatch } from "../store/store";
@@ -6,18 +7,24 @@ import { clearCart, decrementQuantity, incrementQuantity, removeItem } from "../
 import { Link } from "react-router";
 import { useCreateOrderMutation } from "../features/order/queries/order.query";
 import type { OrderRequest } from "../features/order/types/order.types";
+import { useProfileQuery } from "../features/auth/queries/auth";
 
 export const Cart = () => {
     const dispatch = useDispatch<AppDispatch>();
     const items = useSelector(selectCartItems);
     const total = useSelector(selectCartTotal);
     const [createOrder] = useCreateOrderMutation();
+    const { data: profileData } = useProfileQuery();
+    const addresses = profileData?.data?.user?.addresses ?? [];
+    const [selectedAddressId, setSelectedAddressId] = useState<string>("");
 
     const handleCheckout = async () => {
+        if (!selectedAddressId) return;
         const orderPayload: OrderRequest = {
+            addressId: selectedAddressId,
             items: items.map((item) => ({
-            productId: item.product.id,
-            quantity: item.quantity,
+                productId: item.product.id,
+                quantity: item.quantity,
             })),
         };
         await createOrder(orderPayload).then(() => {
@@ -62,7 +69,7 @@ export const Cart = () => {
                         <li key={product.id} className="py-4">
                             <div className="flex gap-3 sm:gap-4 sm:items-center">
                                 <img
-                                    src="/public/product_cover.png"
+                                    src="/product_cover.png"
                                     alt={product.name}
                                     className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-md bg-gray-100 shrink-0"
                                 />
@@ -155,6 +162,33 @@ export const Cart = () => {
                     sm:static sm:border-t sm:border-gray-200 sm:mt-4 sm:pt-6
                 ">
                     <div className="max-w-2xl mx-auto flex flex-col gap-3">
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="address-select" className="text-sm text-gray-500">
+                                Endereço de entrega
+                            </label>
+                            {addresses.length === 0 ? (
+                                <p className="text-sm text-red-400">
+                                    Nenhum endereço cadastrado.{" "}
+                                    <Link to="/profile" className="underline text-[#D1AC2B] hover:text-[#b8941f]">
+                                        Cadastrar endereço
+                                    </Link>
+                                </p>
+                            ) : (
+                                <select
+                                    id="address-select"
+                                    value={selectedAddressId}
+                                    onChange={(e) => setSelectedAddressId(e.target.value)}
+                                    className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D1AC2B]"
+                                >
+                                    <option value="">Selecione um endereço</option>
+                                    {addresses.map((addr) => (
+                                        <option key={addr.id} value={addr.id}>
+                                            {addr.street}, {addr.number} - {addr.neighborhood}, {addr.city} - {addr.zipCode}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                        </div>
                         <div className="flex justify-between items-baseline">
                             <span className="text-gray-500 text-sm sm:text-base">Total</span>
                             <span className="text-xl sm:text-2xl font-semibold tabular-nums">
@@ -166,7 +200,8 @@ export const Cart = () => {
                         </div>
                         <button
                             onClick={handleCheckout}
-                            className="w-full bg-[#D1AC2B] hover:bg-[#b8941f] text-white font-medium py-3 rounded-md transition-colors cursor-pointer text-sm sm:text-base"
+                            disabled={!selectedAddressId}
+                            className="w-full bg-[#D1AC2B] hover:bg-[#b8941f] text-white font-medium py-3 rounded-md transition-colors cursor-pointer text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Finalizar compra
                         </button>
