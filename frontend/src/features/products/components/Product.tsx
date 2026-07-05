@@ -21,7 +21,7 @@ export const Product = (props: ProductsProps) => {
     return (
         <div className="bg-white rounded-md shadow-xl flex overflow-hidden">
             <div className='max-w-40'>
-                <img src="/public/product_cover.png" alt={product.name} />
+                <img src="/product_cover.png" alt={product.name} />
             </div>
             <div className="flex flex-col justify-between w-40">
                 <h2 className="text-center font-medium">{product.name}</h2>
